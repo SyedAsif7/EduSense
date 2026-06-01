@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+*.db
+
+# Node
+node_modules/
+dist/
+dist-ssr
+*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# ML
+*.pkl
+models/*.pkl
+data/*.encodings
+features.csv
+features_latest.csv
+
+# Database
+*.db
+*.db-journal
+instance/

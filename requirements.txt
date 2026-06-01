@@ -1,0 +1,20 @@
+psycopg2-binary
+sqlalchemy
+flask
+flask-cors
+flask-jwt-extended
+flask-sqlalchemy
+paho-mqtt
+pandas
+numpy
+scikit-learn
+xgboost
+shap
+opencv-python
+# face_recognition
+twilio
+imbalanced-learn
+matplotlib
+requests
+python-dotenv
+# RPi.GPIO
