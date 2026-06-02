@@ -128,9 +128,20 @@ def health():
 @app.route("/login", methods=["POST"])
 def login():
     try:
+        print("\n" + "="*50)
+        print("LOGIN ATTEMPT")
+        print(f"Headers: {dict(request.headers)}")
         data = request.json
+        print(f"Body: {data}")
+        
+        if not data:
+            print("ERROR: No JSON body received")
+            return jsonify({"msg": "Missing JSON body"}), 400
+            
         username = data.get("username", "").strip()
         password = str(data.get("password", "")).strip()
+        
+        print(f"User: {username}")
         
         conn = get_db_connection()
         cursor = get_dict_cursor(conn)
@@ -140,15 +151,23 @@ def login():
         conn.close()
         
         if user:
+            print(f"SUCCESS: User {username} found with role {user['role']}")
             # Identity must be a string for better compatibility across some JWT versions
             identity = f"{username}|{user['role']}"
             access_token = create_access_token(identity=identity)
             return jsonify(access_token=access_token, role=user['role'], full_name=user['full_name'])
         
+        print(f"FAILED: Invalid credentials for {username}")
         return jsonify({"msg": "Bad username or password"}), 401
     except Exception as e:
-        print(f"Login error: {e}")
-        return jsonify({"msg": f"Internal server error: {str(e)}"}), 500
+        import traceback
+        error_msg = traceback.format_exc()
+        print(f"CRITICAL LOGIN ERROR:\n{error_msg}")
+        return jsonify({
+            "msg": "Internal server error", 
+            "error": str(e),
+            "trace": error_msg if app.debug else None
+        }), 500
 
 @app.route("/me")
 @jwt_required()
@@ -433,4 +452,4 @@ def send_alert():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=True)

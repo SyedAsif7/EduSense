@@ -149,7 +149,18 @@ const LoginPage: React.FC<LoginPageProps> = ({ handleLogin, onBack }) => {
         setError('Invalid username or password. Please try again.');
       } else {
         const status = err.response.status;
-        const msg = err.response.data?.msg || err.response.data?.error || err.message;
+        let msg = 'An unexpected error occurred.';
+        
+        if (typeof err.response.data === 'string') {
+          msg = err.response.data.slice(0, 100); // Show start of HTML/text error
+        } else if (err.response.data?.msg) {
+          msg = err.response.data.msg;
+        } else if (err.response.data?.error) {
+          msg = err.response.data.error;
+        } else {
+          msg = err.message;
+        }
+        
         setError(`Error ${status}: ${msg}`);
       }
       
