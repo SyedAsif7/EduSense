@@ -1,2 +1,14 @@
+[project]
+name = "edu-sense"
+version = "0.1.0"
+description = "AI-Powered Student Success System"
+dependencies = [
+    "flask",
+    "flask-cors",
+    "flask-jwt-extended",
+    "pandas",
+    "numpy"
+]
+
 [tool.vercel]
-entrypoint = "backend.run:app"
+entrypoint = "backend/run.py"
