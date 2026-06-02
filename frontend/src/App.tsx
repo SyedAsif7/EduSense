@@ -6,6 +6,7 @@ import LoginPage from './components/LoginPage';
 import FacultyDashboard from './components/FacultyDashboard';
 import HODDashboard from './components/HODDashboard';
 import StudentDashboard from './components/StudentDashboard';
+import ProfilePage from './components/ProfilePage';
 import { Bell, Search, Settings, HelpCircle, User } from 'lucide-react';
 
 const App = () => {
@@ -100,21 +101,9 @@ const App = () => {
               {role === 'STUDENT' && <StudentDashboard rollNo={username!} />}
             </>
           )}
-          {activeTab === 'risk' && <FacultyDashboard />}
-          {activeTab === 'trends' && <HODDashboard view="trends" />}
-          {activeTab === 'profile' && (
-            <div className="bg-white/5 backdrop-blur-xl p-12 rounded-3xl border border-white/10 shadow-2xl text-center max-w-lg mx-auto">
-              <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full mx-auto mb-6 flex items-center justify-center text-white shadow-2xl shadow-indigo-500/30">
-                <User size={48} />
-              </div>
-              <h2 className="text-2xl font-bold mb-2 text-white">{sessionStorage.getItem('full_name') || 'User'}</h2>
-              <p className="text-white/50 mb-2 font-medium">{sessionStorage.getItem('username')}</p>
-              <p className="text-indigo-400 text-sm font-semibold mb-8 uppercase tracking-widest">{role}</p>
-              <button className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all">
-                Edit Profile
-              </button>
-            </div>
-          )}
+          {activeTab === 'profile' && <ProfilePage />}
+          {activeTab === 'risk' && role === 'FACULTY' && <FacultyDashboard view="risk" />}
+          {activeTab === 'trends' && role === 'HOD' && <HODDashboard view="trends" />}
         </main>
       </div>
     </div>

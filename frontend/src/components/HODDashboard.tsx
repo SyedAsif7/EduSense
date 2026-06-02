@@ -92,16 +92,24 @@ const HODDashboard: React.FC<HODDashboardProps> = ({ view = 'dashboard' }) => {
 
   const fetchData = async () => {
     try {
-      const [statsRes, facultyRes, studentRes] = await Promise.all([
-        hodService.getDeptStats(),
-        hodService.getFaculties(),
-        studentService.getRiskHeatmap()
-      ]);
-      setStats(statsRes.data);
-      setFaculties(facultyRes.data);
-      setStudents(studentRes.data);
+      // Fetch each separately to be more resilient
+      try {
+        const statsRes = await hodService.getDeptStats();
+        setStats(statsRes.data);
+      } catch (e) { console.error("Stats fetch failed", e); }
+
+      try {
+        const facultyRes = await hodService.getFaculties();
+        setFaculties(facultyRes.data);
+      } catch (e) { console.error("Faculties fetch failed", e); }
+
+      try {
+        const studentRes = await hodService.getStudents();
+        setStudents(studentRes.data);
+      } catch (e) { console.error("Students fetch failed", e); }
+      
     } catch (err) {
-      console.error(err);
+      console.error("General fetch error", err);
     } finally {
       setIsLoading(false);
     }
@@ -532,67 +540,83 @@ const FacultyListView = ({ faculties }: any) => (
 );
 
 /* ─── Student List View ─── */
-const StudentListView = ({ students }: any) => (
-  <div className="bg-white/[0.04] backdrop-blur-md rounded-[3rem] border border-white/[0.08] overflow-hidden">
-    <div className="p-10 border-b border-white/5 flex justify-between items-center">
-      <div>
-        <h3 className="text-2xl font-bold text-white tracking-tight">Department-wide Students</h3>
-        <p className="text-white/40 font-medium text-sm">Global monitoring across all academic batches</p>
-      </div>
-      <div className="flex space-x-2">
-        <button className="p-3 bg-white/5 text-white/40 rounded-2xl hover:text-indigo-400 transition-all border border-white/10">
-          <Filter size={20} />
-        </button>
-        <button className="p-3 bg-white/5 text-white/40 rounded-2xl hover:text-indigo-400 transition-all border border-white/10">
-          <Search size={20} />
-        </button>
-      </div>
+const StudentListView = ({ students }: any) => {
+  // Normalize and filter students
+  const seStudents = students.filter((s: any) => 
+    s.class_name === 'S.E.' || s.class_name === 'SY' || s.class_name?.includes('SY')
+  );
+  const teStudents = students.filter((s: any) => 
+    s.class_name === 'T.E.' || s.class_name === 'TY' || s.class_name?.includes('TY')
+  );
+  const beStudents = students.filter((s: any) => 
+    s.class_name === 'B.E.' || s.class_name === 'BE' || s.class_name?.includes('BE')
+  );
+
+  return (
+    <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+      <ClassSection title="S.E. Batch" subtitle="Second Year" students={seStudents} color="emerald" />
+      <ClassSection title="T.E. Batch" subtitle="Third Year" students={teStudents} color="indigo" />
+      <ClassSection title="B.E. Batch" subtitle="Final Year" students={beStudents} color="purple" />
     </div>
-    <div className="overflow-x-auto">
-      <table className="w-full text-left">
-        <thead>
-          <tr className="bg-white/[0.02]">
-            <th className="px-10 py-6 text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Student Roll No</th>
-            <th className="px-10 py-6 text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Risk Level</th>
-            <th className="px-10 py-6 text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Confidence</th>
-            <th className="px-10 py-6 text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Batch</th>
-            <th className="px-10 py-6 text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Status</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-white/5">
-          {students.slice(0, 10).map((s: any, i: number) => (
-            <tr key={i} className="hover:bg-white/[0.03] transition-colors">
-              <td className="px-10 py-6 font-bold text-white">{s.roll_no}</td>
-              <td className="px-10 py-6">
-                <span className={`px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest ${
-                  s.risk === 'High' ? 'bg-red-500/15 text-red-400 border border-red-500/20' : s.risk === 'Medium' ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20' : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20'
-                }`}>
-                  {s.risk} Risk
-                </span>
-              </td>
-              <td className="px-10 py-6">
-                <div className="flex items-center space-x-3 w-40">
-                  <div className="flex-1 bg-white/5 h-2 rounded-full overflow-hidden">
-                    <div className="bg-indigo-500 h-full rounded-full" style={{ width: `${s.prob * 100}%` }} />
-                  </div>
-                  <span className="text-xs font-bold text-white">{(s.prob * 100).toFixed(0)}%</span>
-                </div>
-              </td>
-              <td className="px-10 py-6 font-medium text-white/50">BE 2026</td>
-              <td className="px-10 py-6">
-                <div className="flex items-center text-emerald-400 text-xs font-bold uppercase tracking-widest">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse" />
-                  Active
-                </div>
-              </td>
+  );
+};
+
+const ClassSection = ({ title, subtitle, students, color }: { title: string, subtitle: string, students: any[], color: string }) => (
+  <div className="bg-white/[0.04] backdrop-blur-md rounded-[2.5rem] border border-white/[0.08] overflow-hidden flex flex-col h-[700px]">
+    <div className="p-8 border-b border-white/5 bg-white/[0.01]">
+      <div className="flex justify-between items-start mb-2">
+        <h3 className="text-xl font-black text-white tracking-tight">{title}</h3>
+        <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-${color}-500/10 text-${color}-400 border border-${color}-500/20`}>
+          {students.length} Students
+        </span>
+      </div>
+      <p className="text-white/30 font-bold text-[10px] uppercase tracking-widest">{subtitle}</p>
+    </div>
+
+    <div className="flex-1 overflow-y-auto custom-scrollbar">
+      {students.length === 0 ? (
+        <div className="h-full flex flex-col items-center justify-center p-10 text-center space-y-4">
+          <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">
+            <Filter className="text-white/20" size={20} />
+          </div>
+          <p className="text-white/20 text-xs font-bold uppercase tracking-widest">No Data Found</p>
+        </div>
+      ) : (
+        <table className="w-full text-left border-separate border-spacing-0">
+          <thead className="sticky top-0 z-10 bg-slate-950/80 backdrop-blur-md">
+            <tr>
+              <th className="px-6 py-4 text-[9px] font-black text-white/20 uppercase tracking-[0.2em] border-b border-white/5">Roll No</th>
+              <th className="px-6 py-4 text-[9px] font-black text-white/20 uppercase tracking-[0.2em] border-b border-white/5">Name</th>
+              <th className="px-6 py-4 text-[9px] font-black text-white/20 uppercase tracking-[0.2em] border-b border-white/5 text-right">Risk</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-white/5">
+            {students.map((s: any, i: number) => (
+              <tr key={i} className="hover:bg-white/[0.03] transition-colors group">
+                <td className="px-6 py-4 font-bold text-white text-xs whitespace-nowrap">{s.roll_no}</td>
+                <td className="px-6 py-4">
+                  <p className="text-white/60 font-bold text-[11px] leading-tight truncate w-32">{s.name}</p>
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <div className={`inline-flex items-center gap-1.5 ${
+                    s.risk === 'High' ? 'text-red-400' : s.risk === 'Medium' ? 'text-amber-400' : 'text-emerald-400'
+                  }`}>
+                    <div className={`w-1.5 h-1.5 rounded-full ${
+                      s.risk === 'High' ? 'bg-red-400' : s.risk === 'Medium' ? 'bg-amber-400' : 'bg-emerald-400'
+                    } animate-pulse`} />
+                    <span className="text-[10px] font-black uppercase tracking-tighter">{s.risk}</span>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
-    <div className="p-8 bg-white/[0.02] border-t border-white/5 text-center">
-      <button className="text-indigo-400 font-bold text-sm uppercase tracking-[0.2em] hover:text-indigo-300">
-        Load All 216 Students
+    
+    <div className="p-6 bg-white/[0.02] border-t border-white/5">
+      <button className="w-full py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-black text-white/40 uppercase tracking-[0.2em] transition-all">
+        View Full Analytics
       </button>
     </div>
   </div>

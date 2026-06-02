@@ -2,7 +2,9 @@
 
 [![React](https://img.shields.io/badge/Frontend-React%2018-blue?logo=react)](https://reactjs.org/)
 [![Flask](https://img.shields.io/badge/Backend-Flask%203.0-lightgrey?logo=flask)](https://flask.palletsprojects.com/)
-[![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791?logo=postgresql)](https://www.postgresql.org/)
+[![PostgreSQL](https://img.shields.io/badge/Database-SQLite%20/%20PostgreSQL-336791?logo=sqlite)](https://www.sqlite.org/)
+[![Vercel](https://img.shields.io/badge/Frontend-Vercel-black?logo=vercel)](https://vercel.com/)
+[![Render](https://img.shields.io/badge/Backend-Render-46E3B7?logo=render)](https://render.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Styling-Tailwind%20CSS-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
 [![Machine Learning](https://img.shields.io/badge/ML-XGBoost%20%2B%20RF-orange?logo=scikitlearn)](https://scikit-learn.org/)
 
@@ -22,8 +24,8 @@
 *   **Ensemble Modeling**: Utilizes an ensemble of **XGBoost** and **Random Forest** classifiers, trained with **SMOTE** to handle class imbalances.
 *   **Explainable AI (SHAP)**: Provides transparency into AI decisions by identifying the top-3 impact factors (e.g., "Decreasing Attendance", "Low Internal Marks") for every student at risk.
 
-### 3. ≡ƒôè Professional Multi-Role Dashboards
-*   **HOD Control Center**: Department-wide intelligence, faculty performance audits, and risk distribution matrices.
+### 3. Professional Multi-Role Dashboards
+*   **HOD Control Center**: Department-wide intelligence, faculty performance audits, and risk distribution matrices. Features specialized views for **Analytics**, **Faculties**, **Students**, and **Management**.
 *   **Faculty Dashboard**: Class-level heatmaps, automated parent alerting system, and SHAP-based student drill-downs.
 *   **Student Portal**: Personalized success tracking, "You vs Class" benchmarking, and AI-generated improvement tips.
 
@@ -54,34 +56,33 @@ EduSense/
 ### 1. Prerequisites
 *   Python 3.10+
 *   Node.js 18+
-*   PostgreSQL 14+
 
-### 2. Backend Setup
+### 2. Live Deployment
+*   **Frontend**: [Vercel](https://vercel.com/) (Vite/React)
+*   **Backend**: [Render](https://render.com/) (Flask/Gunicorn)
+*   **Initialization**: The system features **Auto-Initialization** on startup for easy deployment on free-tier platforms.
+
+### 3. Local Backend Setup
 1.  **Install dependencies**:
     ```bash
     pip install -r requirements.txt
     ```
 2.  **Configure Environment**:
-    Create a `.env` file with your PostgreSQL credentials:
+    Create a `.env` file or set environment variables:
     ```env
-    DB_NAME=edusense
-    DB_USER=postgres
-    DB_PASSWORD=your_password
-    DB_HOST=localhost
-    DB_PORT=5432
+    JWT_SECRET_KEY=your_secret_key
+    DB_PATH=edusense.db (Optional for SQLite)
     ```
 3.  **Ingest Data & Train Models**:
     ```bash
-    python data_pipeline/ingest_real_data.py
-    python data_pipeline/feature_engineering.py
-    python ml_engine/trainer.py
+    python auto_init.py
     ```
 4.  **Run API**:
     ```bash
     $env:PYTHONPATH="."; python backend/run.py
     ```
 
-### 3. Frontend Setup
+### 4. Local Frontend Setup
 1.  **Install packages**:
     ```bash
     cd frontend

@@ -13,8 +13,55 @@ from backend.app.services.alert_service import AlertService
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*", "allow_headers": ["Authorization", "Content-Type"]}})
 
+# Load ML models
+rf_model = None
+xgb_model = None
+
+def load_models():
+    global rf_model, xgb_model
+    if os.path.exists("rf_model.pkl"):
+        try:
+            rf_model = pickle.load(open("rf_model.pkl", "rb"))
+            print("Random Forest model loaded.")
+        except: print("Failed to load RF model.")
+    if os.path.exists("xgb_model.pkl"):
+        try:
+            xgb_model = pickle.load(open("xgb_model.pkl", "rb"))
+            print("XGBoost model loaded.")
+        except: print("Failed to load XGB model.")
+
+# Auto-initialize database on startup if empty (for Render Free Tier)
+def check_and_init():
+    try:
+        from db_config import get_db_connection
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
+        table_exists = cursor.fetchone()
+        
+        if not table_exists:
+            print("Database table 'users' not found. Triggering auto-initialization...")
+            from auto_init import run_init
+            run_init()
+            load_models()
+        else:
+            # Check if empty
+            cursor.execute("SELECT count(*) FROM users")
+            count = cursor.fetchone()[0]
+            if count == 0:
+                print("Users table empty. Triggering auto-initialization...")
+                from auto_init import run_init
+                run_init()
+                load_models()
+        conn.close()
+    except Exception as e:
+        print(f"Auto-init check failed: {e}")
+
+check_and_init()
+load_models()
+
 # Configuration
-app.config['JWT_SECRET_KEY'] = 'edusense-secret-key' # Change in production
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'edusense-secret-key')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)
 app.config['JWT_HEADER_NAME'] = 'Authorization'
 app.config['JWT_HEADER_TYPE'] = 'Bearer'
@@ -22,16 +69,36 @@ app.config['JWT_HEADER_TYPE'] = 'Bearer'
 jwt = JWTManager(app)
 alert_service = AlertService()
 
-# Load ML models
-rf_model = None
-xgb_model = None
-
-if os.path.exists("rf_model.pkl"):
-    rf_model = pickle.load(open("rf_model.pkl", "rb"))
-if os.path.exists("xgb_model.pkl"):
-    xgb_model = pickle.load(open("xgb_model.pkl", "rb"))
+@app.route("/")
+def home():
+    return jsonify({
+        "name": "EduSense AI API",
+        "status": "online",
+        "version": "1.0.0",
+        "documentation": "https://github.com/SyedAsif7/EduSense"
+    })
 
 # Auth Endpoint
+@app.route("/health")
+def health():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT count(*) FROM users")
+        user_count = cursor.fetchone()[0]
+        conn.close()
+        return jsonify({
+            "status": "healthy",
+            "database": "connected",
+            "user_count": user_count,
+            "models_loaded": {
+                "rf": rf_model is not None,
+                "xgb": xgb_model is not None
+            }
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "error": str(e)}), 500
+
 @app.route("/login", methods=["POST"])
 def login():
     data = request.json
@@ -52,6 +119,35 @@ def login():
         return jsonify(access_token=access_token, role=user['role'], full_name=user['full_name'])
     
     return jsonify({"msg": "Bad username or password"}), 401
+
+@app.route("/me")
+@jwt_required()
+def get_me():
+    identity = get_jwt_identity()
+    username = identity.split('|')[0]
+    
+    conn = get_db_connection()
+    cursor = get_dict_cursor(conn)
+    
+    # Get user basic info
+    cursor.execute("SELECT username, role, full_name FROM users WHERE username=?", (username,))
+    user = cursor.fetchone()
+    
+    if not user:
+        conn.close()
+        return jsonify({"msg": "User not found"}), 404
+        
+    result = dict(user)
+    
+    # If student, get additional details from students table
+    if user['role'] == 'STUDENT':
+        cursor.execute("SELECT email, class_name FROM students WHERE roll_number=?", (username,))
+        student_extra = cursor.fetchone()
+        if student_extra:
+            result.update(dict(student_extra))
+            
+    conn.close()
+    return jsonify(result)
 
 @app.route("/risk-heatmap")
 @jwt_required()
@@ -138,9 +234,48 @@ def hod_faculties():
     conn = get_db_connection()
     cursor = get_dict_cursor(conn)
     cursor.execute("SELECT username, full_name, role FROM users WHERE role = 'FACULTY'")
-    faculties = cursor.fetchall()
+    rows = cursor.fetchall()
+    faculties = [dict(row) for row in rows]
     conn.close()
     return jsonify(faculties)
+
+@app.route("/hod/students")
+@jwt_required()
+def hod_students():
+    # Fetch student list
+    conn = get_db_connection()
+    cursor = get_dict_cursor(conn)
+    cursor.execute("SELECT roll_number, name, email, class_name FROM students")
+    students_list = cursor.fetchall()
+    conn.close()
+    
+    # Enrich with risk data if available
+    risk_map = {}
+    if os.path.exists("features_latest.csv") and xgb_model is not None:
+        try:
+            df = pd.read_csv("features_latest.csv")
+            X = df.drop("roll_number", axis=1)
+            probs = xgb_model.predict_proba(X)
+            for i, row in df.iterrows():
+                risk_idx = probs[i].argmax()
+                risk_map[row["roll_number"]] = {
+                    "risk": ["Low", "Medium", "High"][risk_idx],
+                    "prob": round(float(probs[i][risk_idx]), 3)
+                }
+        except Exception as e:
+            print(f"HOD Risk enrichment failed: {e}")
+
+    results = []
+    for s in students_list:
+        student_data = dict(s)
+        # Add risk data or defaults
+        risk_info = risk_map.get(s["roll_number"], {"risk": "Low", "prob": 0.5})
+        student_data.update(risk_info)
+        # Frontend expects 'roll_no' in some places and 'roll_number' in others
+        student_data["roll_no"] = s["roll_number"]
+        results.append(student_data)
+        
+    return jsonify(results)
 
 @app.route("/hod/department-stats")
 @jwt_required()

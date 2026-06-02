@@ -29,7 +29,8 @@ def ingest_real_data(data_dir="data"):
         roll_number VARCHAR(20) PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
         email VARCHAR(100),
-        rfid_tag VARCHAR(50)
+        rfid_tag VARCHAR(50),
+        class_name VARCHAR(20)
     );
 
     CREATE TABLE attendance (
@@ -73,8 +74,14 @@ def ingest_real_data(data_dir="data"):
                     name = s.get("Name")
                     email = f"{roll.lower()}@ssiems.edu"
                     
+                    # Map JSON class names to professional labels
+                    mapped_class = class_name
+                    if "SY" in class_name or "SY" in json_file: mapped_class = "S.E."
+                    elif "TY" in class_name or "TE" in json_file: mapped_class = "T.E."
+                    elif "BE" in class_name or "BE" in json_file: mapped_class = "B.E."
+                    
                     # SQLite INSERT OR REPLACE for ON CONFLICT behavior
-                    cursor.execute("INSERT OR REPLACE INTO students (roll_number, name, email) VALUES (?, ?, ?)", (roll, name, email))
+                    cursor.execute("INSERT OR REPLACE INTO students (roll_number, name, email, class_name) VALUES (?, ?, ?, ?)", (roll, name, email, mapped_class))
                     
                     # Add to users table: username is RollNo, password is PRN
                     cursor.execute("""

@@ -47,6 +47,7 @@ api.interceptors.response.use((response) => {
 
 export const authService = {
   login: (credentials: any) => api.post('/login', credentials),
+  getMe: () => api.get('/me'),
 };
 
 export const studentService = {
@@ -57,6 +58,7 @@ export const studentService = {
 
 export const hodService = {
   getFaculties: () => api.get('/hod/faculties'),
+  getStudents: () => api.get('/hod/students'),
   getDeptStats: () => api.get('/hod/department-stats'),
 };
 
