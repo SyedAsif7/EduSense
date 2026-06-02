@@ -13,6 +13,13 @@ from backend.app.services.alert_service import AlertService
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*", "allow_headers": ["Authorization", "Content-Type"]}})
 
+# Logging for production debugging
+import os
+print(f"Server starting in: {os.getcwd()}")
+print(f"Files in root: {os.listdir('.')}")
+if os.path.exists('backend'):
+    print(f"Files in backend: {os.listdir('backend')}")
+
 # Load ML models
 rf_model = None
 xgb_model = None
