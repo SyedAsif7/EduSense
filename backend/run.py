@@ -74,9 +74,14 @@ def home():
     return jsonify({
         "name": "EduSense AI API",
         "status": "online",
-        "version": "1.0.0",
-        "documentation": "https://github.com/SyedAsif7/EduSense"
+        "version": "1.0.1",
+        "timestamp": "2026-06-02",
+        "msg": "If you see this, the new version is live!"
     })
+
+@app.route("/ping")
+def ping():
+    return "pong"
 
 # Auth Endpoint
 @app.route("/health")
