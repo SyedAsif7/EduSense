@@ -93,7 +93,16 @@
 }
 
 .login-shake {
-  animation: loginShake 0.5s;
+    animation: loginShake 0.5s;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 /* Button shimmer */

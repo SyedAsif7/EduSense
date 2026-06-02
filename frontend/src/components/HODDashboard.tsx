@@ -125,21 +125,21 @@ const HODDashboard: React.FC<HODDashboardProps> = ({ view = 'dashboard' }) => {
   /* ─── Trends View ─── */
   if (view === 'trends') {
     return (
-      <div className="space-y-10 animate-in fade-in duration-500 pb-20">
+      <div className="space-y-6 md:space-y-10 animate-in fade-in duration-500 pb-20">
         {/* Trends Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 bg-white/[0.04] backdrop-blur-md p-10 rounded-[3rem] border border-white/[0.08]">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white/[0.04] backdrop-blur-md p-6 md:p-10 rounded-2xl md:rounded-[3rem] border border-white/[0.08]">
           <div className="space-y-2">
             <div className="flex items-center space-x-3">
-              <div className="bg-emerald-500/15 p-2.5 rounded-2xl border border-emerald-500/20">
-                <BarChart3 className="text-emerald-400 w-6 h-6" />
+              <div className="bg-emerald-500/15 p-2 rounded-xl border border-emerald-500/20">
+                <BarChart3 className="text-emerald-400 w-5 h-5 md:w-6 md:h-6" />
               </div>
-              <span className="text-xs font-bold text-emerald-400 uppercase tracking-[0.3em]">Department Trends</span>
+              <span className="text-[10px] md:text-xs font-bold text-emerald-400 uppercase tracking-[0.2em] md:tracking-[0.3em]">Department Trends</span>
             </div>
-            <h1 className="text-5xl font-bold text-white tracking-tight">Trend Analysis</h1>
-            <p className="text-white/50 font-medium text-lg">Computer Science & Engineering • Academic Trends 2022-26</p>
+            <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight">Trend Analysis</h1>
+            <p className="text-white/50 font-medium text-sm md:text-lg">Computer Science & Engineering • Academic Trends 2022-26</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <button className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-8 py-4 rounded-[1.5rem] font-bold text-sm uppercase tracking-widest shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all flex items-center group">
+            <button className="w-full sm:w-auto bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-[1.5rem] font-bold text-xs md:text-sm uppercase tracking-widest shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all flex items-center justify-center group">
               <Download size={18} className="mr-2 group-hover:translate-y-1 transition-transform" />
               Export Trends
             </button>
@@ -147,27 +147,27 @@ const HODDashboard: React.FC<HODDashboardProps> = ({ view = 'dashboard' }) => {
         </div>
 
         {/* Trend KPIs */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <TrendKPI icon={<Activity className="text-emerald-400" />} label="Attendance Trend" value="85.2%" change="+3.4%" positive direction="up" sub="vs last semester" color="emerald" />
-          <TrendKPI icon={<Target className="text-blue-400" />} label="Pass Rate Trend" value="89.5%" change="+5.1%" positive direction="up" sub="vs last semester" color="blue" />
-          <TrendKPI icon={<AlertTriangle className="text-amber-400" />} label="At Risk Trend" value="67" change="-12%" positive direction="down" sub="vs last semester" color="amber" />
-          <TrendKPI icon={<GraduationCap className="text-purple-400" />} label="Distinction Rate" value="24%" change="+6%" positive direction="up" sub="vs last semester" color="purple" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <TrendKPI icon={<Activity className="text-emerald-400" />} label="Attendance" value="85.2%" change="+3.4%" positive direction="up" sub="vs last sem" color="emerald" />
+          <TrendKPI icon={<Target className="text-blue-400" />} label="Pass Rate" value="89.5%" change="+5.1%" positive direction="up" sub="vs last sem" color="blue" />
+          <TrendKPI icon={<AlertTriangle className="text-amber-400" />} label="At Risk" value="67" change="-12%" positive direction="down" sub="vs last sem" color="amber" />
+          <TrendKPI icon={<GraduationCap className="text-purple-400" />} label="Distinction" value="24%" change="+6%" positive direction="up" sub="vs last sem" color="purple" />
         </div>
 
         {/* Row 1: Monthly Attendance + Risk Distribution */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 bg-white/[0.04] backdrop-blur-md p-10 rounded-[3rem] border border-white/[0.08]">
-            <div className="flex items-center justify-between mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+          <div className="lg:col-span-2 bg-white/[0.04] backdrop-blur-md p-6 md:p-10 rounded-2xl md:rounded-[3rem] border border-white/[0.08]">
+            <div className="flex items-center justify-between mb-6 md:mb-8">
               <div>
-                <h3 className="text-2xl font-bold text-white tracking-tight">Monthly Attendance Trends</h3>
-                <p className="text-white/40 font-medium text-sm mt-1">Batch-wise attendance over the past 10 months</p>
+                <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight">Monthly Attendance</h3>
+                <p className="text-white/40 font-medium text-xs md:text-sm mt-1">Batch-wise trends (past 10 months)</p>
               </div>
-              <div className="flex items-center gap-1 text-emerald-400 bg-emerald-500/15 px-3 py-1.5 rounded-xl border border-emerald-500/20">
+              <div className="flex items-center gap-1 text-emerald-400 bg-emerald-500/15 px-2 md:px-3 py-1 md:py-1.5 rounded-lg md:rounded-xl border border-emerald-500/20">
                 <TrendingUp size={14} />
-                <span className="text-xs font-bold">+3.4%</span>
+                <span className="text-[10px] md:text-xs font-bold">+3.4%</span>
               </div>
             </div>
-            <div className="h-80">
+            <div className="h-64 md:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={MONTHLY_ATTENDANCE_TREND}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.06)" />
@@ -328,22 +328,22 @@ const HODDashboard: React.FC<HODDashboardProps> = ({ view = 'dashboard' }) => {
 
   /* ─── Default Dashboard View ─── */
   return (
-    <div className="space-y-10 animate-in fade-in duration-500 pb-20">
+    <div className="space-y-6 md:space-y-10 animate-in fade-in duration-500 pb-20">
       {/* Premium Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 bg-white/[0.04] backdrop-blur-md p-10 rounded-[3rem] border border-white/[0.08]">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white/[0.04] backdrop-blur-md p-6 md:p-10 rounded-2xl md:rounded-[3rem] border border-white/[0.08]">
         <div className="space-y-2">
           <div className="flex items-center space-x-3">
-            <div className="bg-indigo-500/15 p-2.5 rounded-2xl border border-indigo-500/20">
-              <ShieldCheck className="text-indigo-400 w-6 h-6" />
+            <div className="bg-indigo-500/15 p-2 rounded-xl border border-indigo-500/20">
+              <ShieldCheck className="text-indigo-400 w-5 h-5 md:w-6 md:h-6" />
             </div>
-            <span className="text-xs font-bold text-indigo-400 uppercase tracking-[0.3em]">HOD Control Center</span>
+            <span className="text-[10px] md:text-xs font-bold text-indigo-400 uppercase tracking-[0.2em] md:tracking-[0.3em]">HOD Control Center</span>
           </div>
-          <h1 className="text-5xl font-bold text-white tracking-tight">Departmental Intelligence</h1>
-          <p className="text-white/50 font-medium text-lg">Computer Science & Engineering • Academic Year 2025-26</p>
+          <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight">Departmental Intelligence</h1>
+          <p className="text-white/50 font-medium text-sm md:text-lg">Computer Science & Engineering • 2025-26</p>
         </div>
         
         <div className="flex flex-wrap items-center gap-3">
-          <button className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-8 py-4 rounded-[1.5rem] font-bold text-sm uppercase tracking-widest shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all flex items-center group">
+          <button className="w-full sm:w-auto bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-[1.5rem] font-bold text-xs md:text-sm uppercase tracking-widest shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all flex items-center justify-center group">
             <Download size={18} className="mr-2 group-hover:translate-y-1 transition-transform" />
             Full Audit Report
           </button>
@@ -351,11 +351,11 @@ const HODDashboard: React.FC<HODDashboardProps> = ({ view = 'dashboard' }) => {
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex space-x-2 bg-white/5 backdrop-blur-sm p-2 rounded-[2rem] border border-white/10 w-fit mx-auto lg:mx-0">
-        <TabButton id="analytics" label="Analytics" active={activeTab === 'analytics'} onClick={() => setActiveTab('analytics')} icon={<TrendingUp size={18}/>} />
-        <TabButton id="faculties" label="Faculties" active={activeTab === 'faculties'} onClick={() => setActiveTab('faculties')} icon={<Briefcase size={18}/>} />
-        <TabButton id="students" label="Students" active={activeTab === 'students'} onClick={() => setActiveTab('students')} icon={<Users size={18}/>} />
-        <TabButton id="management" label="Management" active={activeTab === 'management'} onClick={() => setActiveTab('management')} icon={<Settings size={18}/>} />
+      <div className="flex overflow-x-auto no-scrollbar space-x-2 bg-white/5 backdrop-blur-sm p-1.5 md:p-2 rounded-xl md:rounded-[2rem] border border-white/10 w-full lg:w-fit mx-auto lg:mx-0">
+        <TabButton id="analytics" label="Analytics" active={activeTab === 'analytics'} onClick={() => setActiveTab('analytics')} icon={<TrendingUp size={16}/>} />
+        <TabButton id="faculties" label="Faculties" active={activeTab === 'faculties'} onClick={() => setActiveTab('faculties')} icon={<Briefcase size={16}/>} />
+        <TabButton id="students" label="Students" active={activeTab === 'students'} onClick={() => setActiveTab('students')} icon={<Users size={16}/>} />
+        <TabButton id="management" label="Manage" active={activeTab === 'management'} onClick={() => setActiveTab('management')} icon={<Settings size={16}/>} />
       </div>
 
       <AnimatePresence mode='wait'>
@@ -410,7 +410,7 @@ const TrendKPI = ({ icon, label, value, change, positive, direction, sub, color 
 const TabButton = ({ id, label, active, onClick, icon }: any) => (
   <button
     onClick={onClick}
-    className={`flex items-center space-x-2 px-8 py-3.5 rounded-[1.5rem] text-sm font-bold uppercase tracking-widest transition-all ${
+    className={`flex items-center space-x-2 px-4 md:px-8 py-2.5 md:py-3.5 rounded-lg md:rounded-[1.5rem] text-[10px] md:text-sm font-bold uppercase tracking-widest transition-all whitespace-nowrap ${
       active ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/20' : 'text-white/40 hover:bg-white/5 hover:text-white/70'
     }`}
   >
@@ -424,18 +424,18 @@ const AnalyticsView = ({ stats }: any) => {
   if (!stats) return <div className="p-10 text-center font-medium text-white/40">Unable to load analytics data.</div>;
 
   return (
-    <div className="space-y-10">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <StatCard icon={<Users className="text-indigo-400" />} label="Total Enrollment" value={stats.total_students} trend="+8.4% growth" color="indigo" />
-        <StatCard icon={<AlertTriangle className="text-amber-400" />} label="At Risk Pipeline" value={stats.at_risk_count} trend="-12% improvement" color="amber" />
-        <StatCard icon={<UserCheck className="text-emerald-400" />} label="Avg. Attendance" value={`${stats.avg_attendance}%`} trend="+2.5% vs prev sem" color="green" />
-        <StatCard icon={<GraduationCap className="text-purple-400" />} label="Dept. Success" value={`${stats.avg_success_rate}%`} trend="+1.2% target hit" color="purple" />
+    <div className="space-y-6 md:space-y-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+        <StatCard icon={<Users className="text-indigo-400" />} label="Enrollment" value={stats.total_students} trend="+8.4%" color="indigo" />
+        <StatCard icon={<AlertTriangle className="text-amber-400" />} label="At Risk" value={stats.at_risk_count} trend="-12%" color="amber" />
+        <StatCard icon={<UserCheck className="text-emerald-400" />} label="Attendance" value={`${stats.avg_attendance}%`} trend="+2.5%" color="green" />
+        <StatCard icon={<GraduationCap className="text-purple-400" />} label="Success" value={`${stats.avg_success_rate}%`} trend="+1.2%" color="purple" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-white/[0.04] backdrop-blur-md p-10 rounded-[3rem] border border-white/[0.08]">
-          <h3 className="text-2xl font-bold text-white tracking-tight mb-10">Batch Performance Matrix</h3>
-          <div className="h-80">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="lg:col-span-2 bg-white/[0.04] backdrop-blur-md p-6 md:p-10 rounded-2xl md:rounded-[3rem] border border-white/[0.08]">
+          <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight mb-6 md:mb-10">Batch Performance Matrix</h3>
+          <div className="h-64 md:h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={stats.batch_distribution}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.06)" />

@@ -1,4 +1,4 @@
-# ≡ƒôæ EduSense: AI-Powered Student Success System
+# EduSense: AI-Powered Student Success System
 
 [![React](https://img.shields.io/badge/Frontend-React%2018-blue?logo=react)](https://reactjs.org/)
 [![Flask](https://img.shields.io/badge/Backend-Flask%203.0-lightgrey?logo=flask)](https://flask.palletsprojects.com/)
@@ -12,14 +12,14 @@
 
 ---
 
-## ≡ƒîƒ Key Features
+## Key Features
 
-### 1. ≡ƒæü∩╕Å Biometric Attendance System
+### 1. Biometric Attendance System
 *   **Smart Enrollment**: Capture multi-angle facial photos to generate 128-D biometric signatures using `dlib` and `face_recognition`.
 *   **Live Recognition**: Real-time monitoring via Raspberry Pi/Webcam. Students are marked PRESENT automatically based on cosine similarity thresholds (> 0.6).
 *   **Hardware Integration**: Supports MQTT-based event streams for live "Face Detected" notifications.
 
-### 2. ≡ƒÄ» ML Risk Prediction Engine
+### 2. ML Risk Prediction Engine
 *   **Advanced Feature Engineering**: Processes 20+ behavioral indicators including attendance trends, CA score slopes, and lab submission consistency.
 *   **Ensemble Modeling**: Utilizes an ensemble of **XGBoost** and **Random Forest** classifiers, trained with **SMOTE** to handle class imbalances.
 *   **Explainable AI (SHAP)**: Provides transparency into AI decisions by identifying the top-3 impact factors (e.g., "Decreasing Attendance", "Low Internal Marks") for every student at risk.
@@ -29,73 +29,51 @@
 *   **Faculty Dashboard**: Class-level heatmaps, automated parent alerting system, and SHAP-based student drill-downs.
 *   **Student Portal**: Personalized success tracking, "You vs Class" benchmarking, and AI-generated improvement tips.
 
-### 4. ≡ƒôú Multi-Channel Alerting
+### 4. Multi-Channel Alerting
 *   **SMS/WhatsApp**: Automated parent notifications for high-risk flags via **Twilio**.
 *   **Email Reports**: Weekly performance dossiers sent to faculty via **SMTP**.
 
 ---
 
-## ≡ƒùé∩╕Å System Architecture
+## System Architecture
 
 ```text
 EduSense/
-Γö£ΓöÇ backend/              # Flask REST API with JWT Authentication
-Γö£ΓöÇ frontend/             # React (Vite) + Tailwind CSS + Framer Motion
-Γö£ΓöÇ data_pipeline/        # CSV/JSON Ingestion & Feature Engineering
-Γö£ΓöÇ hardware/             # Face recognition (OpenCV/dlib) & IoT logic
-Γö£ΓöÇ ml_engine/            # Model training & XAI (SHAP) logic
-Γö£ΓöÇ data/                 # Raw departmental JSON and CSV marks sheets
-Γö£ΓöÇ requirements.txt      # Python dependencies
-Γö£ΓöÇ db_config.py          # PostgreSQL connection utilities
+├── backend/              # Flask REST API with JWT Authentication
+├── frontend/             # React (Vite) + Tailwind CSS + Framer Motion
+├── data_pipeline/        # CSV/JSON Ingestion & Feature Engineering
+├── hardware/             # Face recognition (OpenCV/dlib) & IoT logic
+├── ml_engine/            # Model training & XAI (SHAP) logic
+├── data/                 # Raw departmental JSON and CSV marks sheets
+├── requirements.txt      # Python dependencies
+├── db_config.py          # PostgreSQL connection utilities
 ```
 
 ---
 
-## ≡ƒÜÇ Getting Started
+## Deployment Guide
 
-### 1. Prerequisites
-*   Python 3.10+
-*   Node.js 18+
+### 1. Render (Backend)
+To deploy the backend on Render successfully:
+1.  **New Web Service**: Connect your GitHub repository.
+2.  **Environment**: `Python 3`.
+3.  **Root Directory**: `(Leave Empty / Project Root)`.
+4.  **Build Command**: `pip install -r requirements.txt && python auto_init.py`.
+5.  **Start Command**: `gunicorn --timeout 120 --bind 0.0.0.0:$PORT backend.run:app`.
+6.  **Environment Variables**:
+    *   `PYTHONPATH`: `.`
+    *   `JWT_SECRET_KEY`: `any-secret-string`
 
-### 2. Live Deployment
-*   **Frontend**: [Vercel](https://vercel.com/) (Vite/React)
-*   **Backend**: [Render](https://render.com/) (Flask/Gunicorn)
-*   **Initialization**: The system features **Auto-Initialization** on startup for easy deployment on free-tier platforms.
-
-### 3. Local Backend Setup
-1.  **Install dependencies**:
-    ```bash
-    pip install -r requirements.txt
-    ```
-2.  **Configure Environment**:
-    Create a `.env` file or set environment variables:
-    ```env
-    JWT_SECRET_KEY=your_secret_key
-    DB_PATH=edusense.db (Optional for SQLite)
-    ```
-3.  **Ingest Data & Train Models**:
-    ```bash
-    python auto_init.py
-    ```
-4.  **Run API**:
-    ```bash
-    $env:PYTHONPATH="."; python backend/run.py
-    ```
-
-### 4. Local Frontend Setup
-1.  **Install packages**:
-    ```bash
-    cd frontend
-    npm install
-    ```
-2.  **Start Development Server**:
-    ```bash
-    npm run dev
-    ```
+### 2. Vercel (Frontend)
+The frontend is already configured with `vercel.json` in the root:
+1.  **Framework Preset**: `Vite`.
+2.  **Root Directory**: `(Leave Empty / Project Root)`.
+3.  **Build Command**: `cd frontend && npm install && npm run build`.
+4.  **Output Directory**: `frontend/dist`.
 
 ---
 
-## ≡ƒæ¬ Login Credentials
+## Login Credentials
 
 | Role | Username | Password |
 | :--- | :--- | :--- |
@@ -107,6 +85,6 @@ EduSense/
 
 ---
 
-## ≡ƒæ¿ΓÇì≡ƒÆ╗ Developed For
+## Developed For
 **SSIEMS Computer Science & Engineering Department**  
 *Predicting success, preventing failure.*

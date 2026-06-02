@@ -28,43 +28,34 @@ def load_models():
     global rf_model, xgb_model
     if os.path.exists("rf_model.pkl"):
         try:
-            rf_model = pickle.load(open("rf_model.pkl", "rb"))
+            with open("rf_model.pkl", "rb") as f:
+                rf_model = pickle.load(f)
             print("Random Forest model loaded.")
-        except: print("Failed to load RF model.")
+        except Exception as e: 
+            print(f"Failed to load RF model: {e}")
     if os.path.exists("xgb_model.pkl"):
         try:
-            xgb_model = pickle.load(open("xgb_model.pkl", "rb"))
+            with open("xgb_model.pkl", "rb") as f:
+                xgb_model = pickle.load(f)
             print("XGBoost model loaded.")
-        except: print("Failed to load XGB model.")
+        except Exception as e: 
+            print(f"Failed to load XGB model: {e}")
 
-# Auto-initialize database on startup if empty (for Render Free Tier)
-def check_and_init():
+# Auto-initialize database check - lighter version
+def check_db():
     try:
         from db_config import get_db_connection
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
         table_exists = cursor.fetchone()
-        
-        if not table_exists:
-            print("Database table 'users' not found. Triggering auto-initialization...")
-            from auto_init import run_init
-            run_init()
-            load_models()
-        else:
-            # Check if empty
-            cursor.execute("SELECT count(*) FROM users")
-            count = cursor.fetchone()[0]
-            if count == 0:
-                print("Users table empty. Triggering auto-initialization...")
-                from auto_init import run_init
-                run_init()
-                load_models()
         conn.close()
+        return bool(table_exists)
     except Exception as e:
-        print(f"Auto-init check failed: {e}")
+        print(f"DB check failed: {e}")
+        return False
 
-check_and_init()
+# We will load models on first request or here, but carefully
 load_models()
 
 # Configuration
@@ -81,9 +72,8 @@ def home():
     return jsonify({
         "name": "EduSense AI API",
         "status": "online",
-        "version": "1.0.1",
-        "timestamp": "2026-06-02",
-        "msg": "If you see this, the new version is live!"
+        "version": "1.0.0",
+        "documentation": "https://github.com/SyedAsif7/EduSense"
     })
 
 @app.route("/ping")
@@ -93,23 +83,33 @@ def ping():
 # Auth Endpoint
 @app.route("/health")
 def health():
+    health_data = {
+        "status": "healthy",
+        "timestamp": "2026-06-02",
+        "database": "unknown",
+        "user_count": 0,
+        "models_loaded": {
+            "rf": rf_model is not None,
+            "xgb": xgb_model is not None
+        },
+        "environment": {
+            "cwd": os.getcwd(),
+            "has_db_file": os.path.exists("edusense.db"),
+            "has_models": os.path.exists("xgb_model.pkl")
+        }
+    }
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT count(*) FROM users")
-        user_count = cursor.fetchone()[0]
+        health_data["user_count"] = cursor.fetchone()[0]
+        health_data["database"] = "connected"
         conn.close()
-        return jsonify({
-            "status": "healthy",
-            "database": "connected",
-            "user_count": user_count,
-            "models_loaded": {
-                "rf": rf_model is not None,
-                "xgb": xgb_model is not None
-            }
-        })
     except Exception as e:
-        return jsonify({"status": "error", "error": str(e)}), 500
+        health_data["status"] = "degraded"
+        health_data["database"] = f"error: {str(e)}"
+    
+    return jsonify(health_data)
 
 @app.route("/login", methods=["POST"])
 def login():

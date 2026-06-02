@@ -168,22 +168,22 @@ const LoginPage: React.FC<LoginPageProps> = ({ handleLogin, onBack }) => {
 
       {/* ─── Back to Home Button ─── */}
       <motion.button
-        className="fixed top-6 left-6 z-50 flex items-center space-x-2 group"
+        className="fixed top-4 md:top-6 left-4 md:left-6 z-50 flex items-center space-x-2 group"
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.8, type: 'spring' }}
         onClick={onBack}
       >
-        <div className="bg-white/[0.06] backdrop-blur-xl rounded-2xl p-3 border border-white/10 group-hover:bg-white/10 group-hover:border-indigo-500/30 transition-all duration-300 shadow-lg shadow-black/10">
-          <ArrowLeft size={18} className="text-white/60 group-hover:text-indigo-400 transition-colors" />
+        <div className="bg-white/[0.06] backdrop-blur-xl rounded-xl md:rounded-2xl p-2.5 md:p-3 border border-white/10 group-hover:bg-white/10 group-hover:border-indigo-500/30 transition-all duration-300 shadow-lg shadow-black/10">
+          <ArrowLeft size={16} md:size={18} className="text-white/60 group-hover:text-indigo-400 transition-colors" />
         </div>
-        <span className="text-[13px] font-medium text-white/0 group-hover:text-white/80 transition-all duration-300 -ml-1">
+        <span className="hidden sm:inline-block text-[13px] font-medium text-white/0 group-hover:text-white/80 transition-all duration-300 -ml-1">
           Back to Home
         </span>
       </motion.button>
 
       {/* Card container */}
-      <div className="relative z-10 w-full flex items-center justify-center px-4"
+      <div className="relative z-10 w-full flex items-center justify-center px-4 md:px-6"
         style={{ perspective: '1200px' }}
       >
         <motion.div
@@ -203,7 +203,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ handleLogin, onBack }) => {
         >
           {/* ─── Glass Card ─── */}
           <motion.div
-            className={shaking ? 'login-shake' : ''}
+            className={`w-full max-w-[430px] ${shaking ? 'login-shake' : ''}`}
             style={{
               background: 'rgba(255, 255, 255, 0.04)',
               backdropFilter: 'blur(24px)',
@@ -211,16 +211,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ handleLogin, onBack }) => {
               borderRadius: '28px',
               border: '1px solid rgba(255, 255, 255, 0.08)',
               boxShadow: '0 25px 70px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.03) inset',
-              width: '430px',
-              maxWidth: '94vw',
               padding: '0',
             }}
           >
             {/* ─── Header ─── */}
-            <div className="relative overflow-hidden rounded-t-[28px]"
+            <div className="relative overflow-hidden rounded-t-[28px] p-8 md:p-10"
               style={{
                 background: 'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.06), rgba(255,255,255,0.02))',
-                padding: '36px 40px 28px',
               }}
             >
               {/* Decorative glow */}

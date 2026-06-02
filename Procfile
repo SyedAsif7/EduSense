@@ -1,1 +1,1 @@
-web: gunicorn backend.run:app
+web: gunicorn --timeout 120 --bind 0.0.0.0:$PORT backend.run:app

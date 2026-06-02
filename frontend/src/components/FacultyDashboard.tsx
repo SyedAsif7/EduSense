@@ -64,31 +64,31 @@ const FacultyDashboard = () => {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 pb-20">
+    <div className="space-y-6 md:space-y-8 animate-in fade-in duration-500 pb-20">
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-bold text-white tracking-tight mb-2">Class Performance Analysis</h1>
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center text-white/60 font-semibold bg-white/5 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/10 text-sm">
+          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-3">Class Performance Analysis</h1>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center text-white/60 font-semibold bg-white/5 backdrop-blur-sm px-3 md:px-4 py-1.5 rounded-full border border-white/10 text-xs md:text-sm">
               <Users size={16} className="mr-2 text-indigo-400" />
-              <span>{heatmap.length} Students Total</span>
+              <span>{heatmap.length} Students</span>
             </div>
-            <div className="flex items-center text-red-400 font-bold bg-red-500/10 px-4 py-1.5 rounded-full border border-red-500/20 text-sm">
+            <div className="flex items-center text-red-400 font-bold bg-red-500/10 px-3 md:px-4 py-1.5 rounded-full border border-red-500/20 text-xs md:text-sm">
               <AlertCircle size={16} className="mr-2" />
               <span>{heatmap.filter(s => s.risk === 'High').length} High Risk</span>
             </div>
           </div>
         </div>
         
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="bg-white/5 backdrop-blur-sm p-1 rounded-2xl border border-white/10 flex overflow-hidden">
-            {['All', 'High', 'Medium', 'Low'].map((f) => (
+        <div className="flex items-center">
+          <div className="bg-white/5 backdrop-blur-sm p-1 rounded-xl md:rounded-2xl border border-white/10 flex w-full sm:w-auto overflow-x-auto no-scrollbar">
+            {['All', 'High', 'Med', 'Low'].map((f) => (
               <button
                 key={f}
-                onClick={() => setFilter(f)}
-                className={`px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
-                  filter === f ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'text-white/40 hover:bg-white/5 hover:text-white/70'
+                onClick={() => setFilter(f === 'Med' ? 'Medium' : f)}
+                className={`flex-1 sm:flex-none px-4 md:px-5 py-2 rounded-lg md:rounded-xl text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all whitespace-nowrap ${
+                  (filter === f || (filter === 'Medium' && f === 'Med')) ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'text-white/40 hover:bg-white/5 hover:text-white/70'
                 }`}
               >
                 {f}
@@ -100,13 +100,13 @@ const FacultyDashboard = () => {
 
       {/* Search Bar */}
       <div className="relative group">
-        <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-white/30 group-focus-within:text-indigo-400 transition-colors">
-          <Search size={22} />
+        <div className="absolute inset-y-0 left-0 pl-4 md:pl-5 flex items-center pointer-events-none text-white/30 group-focus-within:text-indigo-400 transition-colors">
+          <Search size={20} md:size={22} />
         </div>
         <input
           type="text"
-          placeholder="Search by student name or roll number..."
-          className="w-full pl-14 pr-6 py-5 bg-white/5 backdrop-blur-sm border-2 border-white/10 rounded-3xl focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.07] transition-all duration-300 font-bold text-white placeholder:text-white/30"
+          placeholder="Search roll number..."
+          className="w-full pl-12 md:pl-14 pr-6 py-4 md:py-5 bg-white/5 backdrop-blur-sm border-2 border-white/10 rounded-2xl md:rounded-3xl focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.07] transition-all duration-300 font-bold text-white text-sm md:text-base placeholder:text-white/30"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -114,11 +114,11 @@ const FacultyDashboard = () => {
 
       {/* Grid */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map(i => <div key={i} className="h-80 bg-white/5 rounded-[2.5rem] animate-pulse border border-white/5" />)}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
+          {[1, 2, 3, 4].map(i => <div key={i} className="h-64 md:h-80 bg-white/5 rounded-2xl md:rounded-[2.5rem] animate-pulse border border-white/5" />)}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
           <AnimatePresence mode='popLayout'>
             {filteredData.map((student) => (
               <StudentCard 

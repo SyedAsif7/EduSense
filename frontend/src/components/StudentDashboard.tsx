@@ -45,50 +45,50 @@ const StudentDashboard = ({ rollNo }: { rollNo: string }) => {
   ];
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-500 pb-20">
+    <div className="space-y-6 md:space-y-10 animate-in fade-in duration-500 pb-20">
       {/* Welcome Header */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
         <div>
           <div className="flex items-center space-x-3 mb-4">
-            <span className="bg-indigo-500/15 text-indigo-400 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-indigo-500/20">Student Portal</span>
+            <span className="bg-indigo-500/15 text-indigo-400 px-3 md:px-4 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest border border-indigo-500/20">Student Portal</span>
             <span className="text-white/20">•</span>
-            <span className="text-white/40 font-bold text-xs uppercase tracking-widest">Batch of 2026</span>
+            <span className="text-white/40 font-bold text-[10px] md:text-xs uppercase tracking-widest">Batch of 2026</span>
           </div>
-          <h1 className="text-5xl font-bold text-white tracking-tight">
+          <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
             Hello, <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">{report?.roll_number}</span>
           </h1>
-          <p className="text-white/50 font-medium text-lg mt-2">Here's your academic performance roadmap for this week.</p>
+          <p className="text-white/50 font-medium text-sm md:text-lg mt-2">Your academic roadmap for this week.</p>
         </div>
         <div className="flex gap-4">
-          <div className="bg-white/5 backdrop-blur-sm p-4 rounded-3xl border border-white/10 flex items-center space-x-4">
-            <div className="bg-amber-500/15 p-3 rounded-2xl text-amber-400">
-              <Clock size={24} />
+          <div className="bg-white/5 backdrop-blur-sm p-3 md:p-4 rounded-2xl md:rounded-3xl border border-white/10 flex items-center space-x-4">
+            <div className="bg-amber-500/15 p-2 md:p-3 rounded-xl md:rounded-2xl text-amber-400">
+              <Clock size={20} md:size={24} />
             </div>
             <div>
               <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest leading-none mb-1">Last Sync</p>
-              <p className="text-sm font-bold text-white leading-none">2 mins ago</p>
+              <p className="text-xs md:text-sm font-bold text-white leading-none">2 mins ago</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        <div className="lg:col-span-2 space-y-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10">
+        <div className="lg:col-span-2 space-y-6 md:space-y-10">
           {/* Main Charts */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             <motion.div 
               whileHover={{ y: -5 }}
-              className="bg-white/[0.04] backdrop-blur-md p-10 rounded-[3rem] border border-white/[0.08] hover:border-white/15 transition-all"
+              className="bg-white/[0.04] backdrop-blur-md p-6 md:p-10 rounded-2xl md:rounded-[3rem] border border-white/[0.08] hover:border-white/15 transition-all"
             >
-              <h3 className="text-xl font-bold text-white mb-8 flex items-center uppercase tracking-widest text-xs">
-                <Target size={18} className="mr-3 text-indigo-400" />
+              <h3 className="text-lg font-bold text-white mb-6 md:mb-8 flex items-center uppercase tracking-widest text-[10px] md:text-xs">
+                <Target size={16} md:size={18} className="mr-3 text-indigo-400" />
                 Skill Proficiency
               </h3>
-              <div className="h-72">
+              <div className="h-56 md:h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
                     <PolarGrid stroke="rgba(255,255,255,0.08)" />
-                    <PolarAngleAxis dataKey="subject" tick={{fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 700}} />
+                    <PolarAngleAxis dataKey="subject" tick={{fill: 'rgba(255,255,255,0.4)', fontSize: 9, fontWeight: 700}} />
                     <Radar name="Performance" dataKey="A" stroke="#818cf8" strokeWidth={2} fill="#818cf8" fillOpacity={0.25} />
                   </RadarChart>
                 </ResponsiveContainer>
@@ -97,20 +97,20 @@ const StudentDashboard = ({ rollNo }: { rollNo: string }) => {
 
             <motion.div 
               whileHover={{ y: -5 }}
-              className="bg-white/[0.04] backdrop-blur-md p-10 rounded-[3rem] border border-white/[0.08] hover:border-white/15 transition-all"
+              className="bg-white/[0.04] backdrop-blur-md p-6 md:p-10 rounded-2xl md:rounded-[3rem] border border-white/[0.08] hover:border-white/15 transition-all"
             >
-              <h3 className="text-xl font-bold text-white mb-8 flex items-center uppercase tracking-widest text-xs">
-                <Zap size={18} className="mr-3 text-amber-400" />
+              <h3 className="text-lg font-bold text-white mb-6 md:mb-8 flex items-center uppercase tracking-widest text-[10px] md:text-xs">
+                <Zap size={16} md:size={18} className="mr-3 text-amber-400" />
                 Benchmark Analysis
               </h3>
-              <div className="h-72">
+              <div className="h-56 md:h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={comparisonData} margin={{ top: 20, right: 0, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.06)" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 700}} />
-                    <Tooltip cursor={{fill: 'rgba(255,255,255,0.03)'}} contentStyle={{borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)', background: '#1e293b', color: '#fff'}} />
-                    <Bar dataKey="You" fill="#818cf8" radius={[6, 6, 0, 0]} />
-                    <Bar dataKey="Class" fill="rgba(255,255,255,0.1)" radius={[6, 6, 0, 0]} />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: 'rgba(255,255,255,0.4)', fontSize: 9, fontWeight: 700}} />
+                    <Tooltip cursor={{fill: 'rgba(255,255,255,0.03)'}} contentStyle={{borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', background: '#1e293b', color: '#fff'}} />
+                    <Bar dataKey="You" fill="#818cf8" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Class" fill="rgba(255,255,255,0.1)" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -121,36 +121,36 @@ const StudentDashboard = ({ rollNo }: { rollNo: string }) => {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[3rem] p-10 text-white relative overflow-hidden shadow-2xl shadow-indigo-500/15"
+            className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl md:rounded-[3rem] p-6 md:p-10 text-white relative overflow-hidden shadow-2xl shadow-indigo-500/15"
           >
-            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 md:gap-8">
               <div className="max-w-md">
-                <div className="flex items-center space-x-3 mb-6">
+                <div className="flex items-center space-x-3 mb-4 md:mb-6">
                   <div className="bg-white/15 p-2 rounded-xl">
-                    <Award size={24} className="text-white" />
+                    <Award size={20} md:size={24} className="text-white" />
                   </div>
-                  <h2 className="text-2xl font-bold tracking-tight">Predictive Insight</h2>
+                  <h2 className="text-xl md:text-2xl font-bold tracking-tight">Predictive Insight</h2>
                 </div>
-                <div className="flex flex-wrap gap-2 mb-6">
+                <div className="flex flex-wrap gap-2 mb-4 md:mb-6">
                   {report?.top_factors?.map((f: any, i: number) => (
-                    <div key={i} className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center ${
+                    <div key={i} className={`px-3 md:px-4 py-1 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-widest flex items-center ${
                       f.impact === 'Positive' ? 'bg-emerald-400/20 text-emerald-300' : 'bg-red-400/20 text-red-300'
                     }`}>
-                      {f.impact === 'Positive' ? <CheckCircle size={12} className="mr-2" /> : <AlertCircle size={12} className="mr-2" />}
+                      {f.impact === 'Positive' ? <CheckCircle size={10} md:size={12} className="mr-2" /> : <AlertCircle size={10} md:size={12} className="mr-2" />}
                       {f.factor}
                     </div>
                   ))}
                 </div>
-                <p className="text-indigo-200 font-medium leading-relaxed">
+                <p className="text-indigo-200 text-sm md:text-base font-medium leading-relaxed">
                   Our AI models suggest that improving your <span className="text-white font-semibold">attendance in core subjects</span> by 5% could boost your next MSE scores by nearly 12%.
                 </p>
               </div>
-              <button className="bg-white/15 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-white/25 transition-all flex items-center self-start md:self-center">
+              <button className="bg-white/15 backdrop-blur-sm border border-white/20 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold uppercase tracking-widest text-[10px] md:text-xs hover:bg-white/25 transition-all flex items-center self-start md:self-center">
                 Get Personal Plan
                 <ArrowRight size={16} className="ml-2" />
               </button>
             </div>
-            <BookOpen size={200} className="absolute right-[-40px] bottom-[-40px] text-white/5 -rotate-12" />
+            <BookOpen size={160} md:size={200} className="absolute right-[-40px] bottom-[-40px] text-white/5 -rotate-12" />
           </motion.div>
         </div>
 
