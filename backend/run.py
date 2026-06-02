@@ -1,9 +1,16 @@
+import sys
+import os
+
+# Add the project root to sys.path so we can import db_config
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if root_dir not in sys.path:
+    sys.path.insert(0, root_dir)
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 import pickle
 import pandas as pd
-import os
 import shap
 import numpy as np
 from datetime import timedelta
@@ -121,6 +128,7 @@ def health():
 @app.route("/login", methods=["POST"])
 def login():
     data = request.json
+    print(f"Login attempt: {data}")
     username = data.get("username", "").strip()
     password = str(data.get("password", "")).strip()
     
@@ -129,6 +137,7 @@ def login():
     # Case-insensitive username check for better UX
     cursor.execute("SELECT * FROM users WHERE LOWER(username)=LOWER(?) AND password=?", (username, password))
     user = cursor.fetchone()
+    print(f"User found: {user['username'] if user else 'None'}")
     conn.close()
     
     if user:

@@ -139,9 +139,18 @@ const LoginPage: React.FC<LoginPageProps> = ({ handleLogin, onBack }) => {
       setIsLoading(false);
       setSuccess('Login successful! Redirecting to dashboard...');
       setTimeout(() => setExiting(true), 1500);
-    } catch {
+    } catch (err: any) {
       setIsLoading(false);
-      setError('Invalid username or password. Please try again.');
+      console.error('Login error:', err);
+      
+      if (!err.response) {
+        setError('Network error: Cannot reach the server. Please ensure the backend is running.');
+      } else if (err.response.status === 401) {
+        setError('Invalid username or password. Please try again.');
+      } else {
+        setError(`Error: ${err.response.data?.msg || 'An unexpected error occurred.'}`);
+      }
+      
       setShaking(true);
       setTimeout(() => setShaking(false), 500);
     }

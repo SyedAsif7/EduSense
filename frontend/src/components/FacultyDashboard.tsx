@@ -493,17 +493,13 @@ const StudentCard = ({ student, user, onAlert, onViewDetails }: any) => {
       </div>
 
       {/* Identity Section */}
-      <div className="mb-8 space-y-1">
-        <h3 className="font-black text-white text-xl tracking-tight truncate leading-tight" title={student.roll_no}>
-          {student.roll_no}
+      <div className="mb-8 space-y-1 overflow-hidden">
+        <h3 className="font-black text-white text-xl tracking-tight truncate leading-tight" title={student.name || student.roll_no}>
+          {student.name || 'Unknown Student'}
         </h3>
-        <p className="text-[14px] font-bold text-indigo-400/90 truncate leading-tight" title={student.name}>
-          {student.name}
+        <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] truncate">
+          {student.roll_no} &middot; {user?.class_name || 'T.E.'}
         </p>
-        <div className="flex items-center text-[10px] font-black text-white/20 uppercase tracking-[0.2em] pt-1">
-          <Users size={10} className="mr-1.5" />
-          Batch {user?.class_name || '2026'}
-        </div>
       </div>
 
       {/* Confidence Section */}
