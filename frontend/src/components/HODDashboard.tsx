@@ -29,6 +29,8 @@ import { hodService, studentService } from '../services/api';
 /* ─── Props ─── */
 interface HODDashboardProps {
   view?: 'dashboard' | 'trends';
+  externalSearch?: string;
+  onSearchChange?: (val: string) => void;
 }
 
 /* ─── Mock trend data ─── */
@@ -79,12 +81,20 @@ const SUBJECT_TRENDS = [
 ];
 
 /* ─── Main Component ─── */
-const HODDashboard: React.FC<HODDashboardProps> = ({ view = 'dashboard' }) => {
+const HODDashboard: React.FC<HODDashboardProps> = ({ view = 'dashboard', externalSearch = '', onSearchChange }) => {
   const [activeTab, setActiveTab] = useState('analytics');
   const [stats, setStats] = useState<any>(null);
   const [faculties, setFaculties] = useState<any[]>([]);
   const [students, setStudents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Synchronize local search with external search
+  useEffect(() => {
+    if (externalSearch !== undefined && externalSearch !== searchTerm) {
+      setSearchTerm(externalSearch);
+    }
+  }, [externalSearch]);
 
   useEffect(() => {
     fetchData();
@@ -122,6 +132,16 @@ const HODDashboard: React.FC<HODDashboardProps> = ({ view = 'dashboard' }) => {
     </div>
   );
 
+  const filteredFaculties = faculties.filter(f => 
+    f.full_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    f.username.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredStudents = students.filter(s => 
+    s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    s.roll_no.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   /* ─── Trends View ─── */
   if (view === 'trends') {
     return (
@@ -147,10 +167,11 @@ const HODDashboard: React.FC<HODDashboardProps> = ({ view = 'dashboard' }) => {
         </div>
 
         {/* Trend KPIs */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6">
           <TrendKPI icon={<Activity className="text-emerald-400" />} label="Attendance" value="85.2%" change="+3.4%" positive direction="up" sub="vs last sem" color="emerald" />
           <TrendKPI icon={<Target className="text-blue-400" />} label="Pass Rate" value="89.5%" change="+5.1%" positive direction="up" sub="vs last sem" color="blue" />
           <TrendKPI icon={<AlertTriangle className="text-amber-400" />} label="At Risk" value="67" change="-12%" positive direction="down" sub="vs last sem" color="amber" />
+          <TrendKPI icon={<ShieldCheck className="text-indigo-400" />} label="AI Confidence" value={`${((stats?.avg_confidence || 0.88) * 100).toFixed(1)}%`} change="+2%" positive direction="up" sub="Model Reliability" color="indigo" />
           <TrendKPI icon={<GraduationCap className="text-purple-400" />} label="Distinction" value="24%" change="+6%" positive direction="up" sub="vs last sem" color="purple" />
         </div>
 
@@ -367,8 +388,8 @@ const HODDashboard: React.FC<HODDashboardProps> = ({ view = 'dashboard' }) => {
           transition={{ duration: 0.3 }}
         >
           {activeTab === 'analytics' && <AnalyticsView stats={stats} />}
-          {activeTab === 'faculties' && <FacultyListView faculties={faculties} />}
-          {activeTab === 'students' && <StudentListView students={students} />}
+          {activeTab === 'faculties' && <FacultyListView faculties={filteredFaculties} />}
+          {activeTab === 'students' && <StudentListView students={filteredStudents} />}
           {activeTab === 'management' && <ManagementView />}
         </motion.div>
       </AnimatePresence>
@@ -587,6 +608,7 @@ const ClassSection = ({ title, subtitle, students, color }: { title: string, sub
             <tr>
               <th className="px-6 py-4 text-[9px] font-black text-white/20 uppercase tracking-[0.2em] border-b border-white/5">Roll No</th>
               <th className="px-6 py-4 text-[9px] font-black text-white/20 uppercase tracking-[0.2em] border-b border-white/5">Name</th>
+              <th className="px-6 py-4 text-[9px] font-black text-white/20 uppercase tracking-[0.2em] border-b border-white/5 text-right">Confidence</th>
               <th className="px-6 py-4 text-[9px] font-black text-white/20 uppercase tracking-[0.2em] border-b border-white/5 text-right">Risk</th>
             </tr>
           </thead>
@@ -596,6 +618,13 @@ const ClassSection = ({ title, subtitle, students, color }: { title: string, sub
                 <td className="px-6 py-4 font-bold text-white text-xs whitespace-nowrap">{s.roll_no}</td>
                 <td className="px-6 py-4">
                   <p className="text-white/60 font-bold text-[11px] leading-tight truncate w-32">{s.name}</p>
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <span className={`text-[10px] font-black ${
+                    s.risk === 'High' ? 'text-red-400' : s.risk === 'Medium' ? 'text-amber-400' : 'text-emerald-400'
+                  }`}>
+                    {(s.prob * 100).toFixed(0)}%
+                  </span>
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className={`inline-flex items-center gap-1.5 ${

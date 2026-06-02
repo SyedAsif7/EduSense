@@ -100,11 +100,11 @@ const Sidebar: React.FC<SidebarProps> = ({
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-4 mb-4 border border-white/10">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/20 shrink-0">
-                {(sessionStorage.getItem('full_name') || role)[0]}
+                {(sessionStorage.getItem('full_name') || role || 'U')[0]}
               </div>
               <div className="overflow-hidden">
                 <p className="text-sm font-bold text-white truncate">{sessionStorage.getItem('full_name') || 'Administrator'}</p>
-                <p className="text-xs text-white/40 truncate">{role.toLowerCase()}@edusense.edu</p>
+                <p className="text-xs text-white/40 truncate">{(role || 'user').toLowerCase()}@edusense.edu</p>
               </div>
             </div>
           </div>

@@ -106,9 +106,11 @@ const ProfilePage: React.FC = () => {
                 <Edit2 size={16} />
                 Edit Profile
               </button>
-              <button className="flex-1 sm:flex-none bg-white/5 backdrop-blur-md border border-white/10 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold uppercase tracking-widest text-[10px] md:text-xs hover:bg-white/10 transition-all text-center">
-                Resume
-              </button>
+              {user.role === 'STUDENT' && (
+                <button className="flex-1 sm:flex-none bg-white/5 backdrop-blur-md border border-white/10 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold uppercase tracking-widest text-[10px] md:text-xs hover:bg-white/10 transition-all text-center">
+                  Resume
+                </button>
+              )}
             </div>
           </div>
         </div>

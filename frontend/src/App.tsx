@@ -7,7 +7,7 @@ import FacultyDashboard from './components/FacultyDashboard';
 import HODDashboard from './components/HODDashboard';
 import StudentDashboard from './components/StudentDashboard';
 import ProfilePage from './components/ProfilePage';
-import { Bell, Search, Settings, HelpCircle, Menu } from 'lucide-react';
+import { Bell, Search, Settings, HelpCircle, Menu, X } from 'lucide-react';
 
 const App = () => {
   const [token, setToken] = useState(sessionStorage.getItem('token'));
@@ -16,6 +16,7 @@ const App = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showLogin, setShowLogin] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleLogin = async (loginUsername: string, password: string) => {
     try {
@@ -69,17 +70,30 @@ const App = () => {
             >
               <Menu size={24} />
             </button>
-            <div className="hidden md:flex items-center space-x-4 bg-white/5 backdrop-blur-sm px-4 py-2.5 rounded-xl w-64 lg:w-96 border border-white/10">
-              <Search size={18} className="text-white/40" />
-              <input 
-                type="text" 
-                placeholder="Search..." 
-                className="bg-transparent border-none focus:ring-0 text-sm w-full font-medium text-white placeholder:text-white/30 outline-none"
-              />
-            </div>
+            {/* Search Bar - Hidden for Students */}
+            {role !== 'STUDENT' && (
+              <div className="hidden md:flex items-center space-x-4 bg-white/5 backdrop-blur-sm px-4 py-2.5 rounded-xl w-64 lg:w-96 border border-white/10 group focus-within:border-indigo-500/50 transition-all">
+                <Search size={18} className="text-white/40 group-focus-within:text-indigo-400" />
+                <input 
+                  type="text" 
+                  placeholder="Search..."
+                  className="bg-transparent border-none focus:ring-0 text-sm w-full font-medium text-white placeholder:text-white/30 outline-none"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                {searchTerm && (
+                  <button 
+                    onClick={() => setSearchTerm('')}
+                    className="text-white/20 hover:text-white transition-colors"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
-          <div className="flex items-center space-x-3 md:space-x-6">
+            <div className="flex items-center space-x-3 md:space-x-6">
             <div className="hidden sm:flex items-center space-x-4 mr-2">
               <button className="text-white/40 hover:text-white/80 transition-colors relative">
                 <Bell size={20} />
@@ -93,14 +107,14 @@ const App = () => {
             <div className="h-8 w-[1px] bg-white/10 hidden sm:block"></div>
             
             <div className="flex items-center space-x-3">
-              <div className="text-right hidden xs:block">
+              <div className="text-right hidden sm:block">
                 <p className="text-xs md:text-sm font-bold text-white leading-none mb-1 truncate max-w-[100px] md:max-w-none">
                   {sessionStorage.getItem('full_name')?.split(' ')[0] || 'User'}
                 </p>
-                <p className="text-[10px] font-semibold text-white/40 uppercase tracking-widest leading-none">{role}</p>
+                <p className="text-[10px] font-semibold text-white/40 uppercase tracking-widest leading-none">{role || 'User'}</p>
               </div>
               <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-indigo-500/20">
-                {(sessionStorage.getItem('full_name') || 'U')[0]}
+                {(sessionStorage.getItem('full_name') || role || 'U')[0]}
               </div>
             </div>
           </div>
@@ -110,14 +124,14 @@ const App = () => {
         <main className="p-4 md:p-8 max-w-7xl mx-auto w-full overflow-x-hidden">
           {activeTab === 'dashboard' && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              {role === 'FACULTY' && <FacultyDashboard />}
-              {role === 'HOD' && <HODDashboard />}
+              {role === 'FACULTY' && <FacultyDashboard externalSearch={searchTerm} onSearchChange={setSearchTerm} />}
+              {role === 'HOD' && <HODDashboard externalSearch={searchTerm} onSearchChange={setSearchTerm} />}
               {role === 'STUDENT' && <StudentDashboard rollNo={username!} />}
             </div>
           )}
           {activeTab === 'profile' && <ProfilePage />}
-          {activeTab === 'risk' && role === 'FACULTY' && <FacultyDashboard view="risk" />}
-          {activeTab === 'trends' && role === 'HOD' && <HODDashboard view="trends" />}
+          {activeTab === 'risk' && role === 'FACULTY' && <FacultyDashboard view="risk" externalSearch={searchTerm} onSearchChange={setSearchTerm} />}
+          {activeTab === 'trends' && role === 'HOD' && <HODDashboard view="trends" externalSearch={searchTerm} onSearchChange={setSearchTerm} />}
         </main>
       </div>
     </div>

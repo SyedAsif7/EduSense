@@ -64,6 +64,13 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)
 app.config['JWT_HEADER_NAME'] = 'Authorization'
 app.config['JWT_HEADER_TYPE'] = 'Bearer'
 
+# Teacher to Class Mapping
+TEACHER_CLASS_MAP = {
+    "DRS": "S.E.",
+    "BPG": "T.E.",
+    "JPK": "B.E."
+}
+
 jwt = JWTManager(app)
 alert_service = AlertService()
 
@@ -157,6 +164,10 @@ def get_me():
         student_extra = cursor.fetchone()
         if student_extra:
             result.update(dict(student_extra))
+    
+    # If faculty, add assigned class
+    elif user['role'] == 'FACULTY':
+        result['class_name'] = TEACHER_CLASS_MAP.get(username.upper(), "N/A")
             
     conn.close()
     return jsonify(result)
@@ -165,21 +176,55 @@ def get_me():
 @jwt_required()
 def risk_heatmap():
     if not os.path.exists("features_latest.csv") or xgb_model is None:
-        # Return empty list instead of 400 to prevent dashboard crashes
         return jsonify([])
         
-    df = pd.read_csv("features_latest.csv")
-    X = df.drop("roll_number", axis=1)
+    identity = get_jwt_identity()
+    username, role = identity.split('|')
     
+    # Determine if we need to filter by class
+    assigned_class = None
+    if role == 'FACULTY':
+        assigned_class = TEACHER_CLASS_MAP.get(username.upper())
+        
+    df = pd.read_csv("features_latest.csv")
+    
+    # If faculty, filter by assigned class
+    if assigned_class:
+        conn = get_db_connection()
+        cursor = get_dict_cursor(conn)
+        cursor.execute("SELECT roll_number FROM students WHERE class_name = ?", (assigned_class,))
+        class_students = [row['roll_number'] for row in cursor.fetchall()]
+        conn.close()
+        df = df[df['roll_number'].isin(class_students)]
+
+    if df.empty:
+        return jsonify([])
+
+    X = df.drop("roll_number", axis=1)
     probs = xgb_model.predict_proba(X)
+    
+    # Fetch student names from DB
+    conn = get_db_connection()
+    cursor = get_dict_cursor(conn)
+    cursor.execute("SELECT roll_number, name FROM students")
+    name_map = {row['roll_number']: row['name'] for row in cursor.fetchall()}
+    conn.close()
+
     results = []
-    for i, row in df.iterrows():
+    for i, (idx, row) in enumerate(df.iterrows()):
         risk_idx = probs[i].argmax()
         risk = ["Low", "Medium", "High"][risk_idx]
+        # Calculate confidence based on the winning class probability
+        confidence = round(float(probs[i][risk_idx]), 3)
+        roll_no = row["roll_number"]
         results.append({
-            "roll_no": row["roll_number"], 
+            "roll_no": roll_no, 
+            "name": name_map.get(roll_no, f"Student {roll_no}"),
             "risk": risk, 
-            "prob": round(float(probs[i][risk_idx]), 3)
+            "prob": confidence,
+            "attendance_pct": round(float(row["attendance_pct"]), 1),
+            "avg_ca_score": round(float(row["avg_ca_score"]), 1),
+            "ca_trend_slope": float(row["ca_trend_slope"])
         })
     return jsonify(results)
 
@@ -206,6 +251,18 @@ def student_report(roll_no):
         return jsonify({"msg": "Student not found"}), 404
         
     report = student_data.iloc[0].to_dict()
+    
+    # Fetch student name from DB
+    conn = get_db_connection()
+    cursor = get_dict_cursor(conn)
+    cursor.execute("SELECT name FROM students WHERE roll_number = ?", (roll_no,))
+    student_db = cursor.fetchone()
+    conn.close()
+    
+    if student_db:
+        report["name"] = student_db["name"]
+    else:
+        report["name"] = f"Student {roll_no}"
     
     try:
         X = df.drop("roll_number", axis=1)
@@ -268,7 +325,7 @@ def hod_students():
             df = pd.read_csv("features_latest.csv")
             X = df.drop("roll_number", axis=1)
             probs = xgb_model.predict_proba(X)
-            for i, row in df.iterrows():
+            for i, (idx, row) in enumerate(df.iterrows()):
                 risk_idx = probs[i].argmax()
                 risk_map[row["roll_number"]] = {
                     "risk": ["Low", "Medium", "High"][risk_idx],
@@ -300,12 +357,23 @@ def hod_dept_stats():
     total_students = cursor.fetchone()[0]
     conn.close()
     
+    # Calculate avg confidence from latest features if possible
+    avg_conf = 0.88
+    if os.path.exists("features_latest.csv") and xgb_model is not None:
+        try:
+            df = pd.read_csv("features_latest.csv")
+            X = df.drop("roll_number", axis=1)
+            probs = xgb_model.predict_proba(X)
+            avg_conf = float(np.mean(np.max(probs, axis=1)))
+        except: pass
+
     return jsonify({
         "total_students": total_students,
         "total_faculties": 12,
         "avg_attendance": 78.5,
         "avg_success_rate": 92.0,
         "at_risk_count": 34,
+        "avg_confidence": round(avg_conf, 3),
         "batch_distribution": [
             {"name": "FE", "students": 60, "risk": 5},
             {"name": "SE", "students": 58, "risk": 12},

@@ -103,7 +103,6 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-}
 
 /* Button shimmer */
 @keyframes btnShimmer {
