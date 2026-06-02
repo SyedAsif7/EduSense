@@ -1,0 +1,10 @@
+backend/
+hardware/
+data/
+ml_engine/
+data_pipeline/
+requirements.txt
+Procfile
+seed_db.py
+seed_sqlite.py
+db_config.py
