@@ -17,4 +17,5 @@ imbalanced-learn
 matplotlib
 requests
 python-dotenv
+gunicorn
 # RPi.GPIO

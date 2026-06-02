@@ -2,18 +2,21 @@ import json
 import pandas as pd
 import os
 import glob
+import sqlite3
+import random
+from datetime import datetime, timedelta
 from db_config import get_db_connection
 
 def ingest_real_data(data_dir="data"):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # 1. Clear existing data and recreate tables with PostgreSQL syntax
-    cursor.execute("""
-    DROP TABLE IF EXISTS attendance CASCADE;
-    DROP TABLE IF EXISTS performance CASCADE;
-    DROP TABLE IF EXISTS students CASCADE;
-    DROP TABLE IF EXISTS users CASCADE;
+    # 1. Clear existing data and recreate tables with SQLite syntax
+    cursor.executescript("""
+    DROP TABLE IF EXISTS attendance;
+    DROP TABLE IF EXISTS performance;
+    DROP TABLE IF EXISTS students;
+    DROP TABLE IF EXISTS users;
 
     CREATE TABLE users (
         username VARCHAR(50) PRIMARY KEY,
@@ -30,14 +33,14 @@ def ingest_real_data(data_dir="data"):
     );
 
     CREATE TABLE attendance (
-        id SERIAL PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         roll_number VARCHAR(20) REFERENCES students(roll_number),
         timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         status VARCHAR(50)
     );
 
     CREATE TABLE performance (
-        id SERIAL PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         roll_number VARCHAR(20) REFERENCES students(roll_number),
         week_number INTEGER,
         ca_score FLOAT,
@@ -69,14 +72,14 @@ def ingest_real_data(data_dir="data"):
                     
                     name = s.get("Name")
                     email = f"{roll.lower()}@ssiems.edu"
-                    cursor.execute("INSERT INTO students (roll_number, name, email) VALUES (%s, %s, %s) ON CONFLICT (roll_number) DO UPDATE SET name = EXCLUDED.name, email = EXCLUDED.email", (roll, name, email))
+                    
+                    # SQLite INSERT OR REPLACE for ON CONFLICT behavior
+                    cursor.execute("INSERT OR REPLACE INTO students (roll_number, name, email) VALUES (?, ?, ?)", (roll, name, email))
                     
                     # Add to users table: username is RollNo, password is PRN
                     cursor.execute("""
-                        INSERT INTO users (username, password, role, full_name) 
-                        VALUES (%s, %s, %s, %s) 
-                        ON CONFLICT (username) 
-                        DO UPDATE SET password = EXCLUDED.password, full_name = EXCLUDED.full_name
+                        INSERT OR REPLACE INTO users (username, password, role, full_name) 
+                        VALUES (?, ?, ?, ?)
                     """, (roll, prn, "STUDENT", name))
             except Exception as e:
                 print(f"Error parsing {json_file}: {e}")
@@ -92,10 +95,8 @@ def ingest_real_data(data_dir="data"):
     
     for t in restricted_teachers:
         cursor.execute("""
-            INSERT INTO users (username, password, role, full_name) 
-            VALUES (%s, %s, %s, %s) 
-            ON CONFLICT (username) 
-            DO UPDATE SET role = EXCLUDED.role, full_name = EXCLUDED.full_name, password = 'edu123'
+            INSERT OR REPLACE INTO users (username, password, role, full_name) 
+            VALUES (?, ?, ?, ?)
         """, (t["username"], "edu123", t["role"], t["name"]))
 
     print(f"Ingested students from JSON files.")
@@ -141,7 +142,7 @@ def ingest_real_data(data_dir="data"):
                 if not roll or roll == "nan": continue
                 
                 # Check if student exists in students table to avoid foreign key violation
-                cursor.execute("SELECT 1 FROM students WHERE roll_number = %s", (roll,))
+                cursor.execute("SELECT 1 FROM students WHERE roll_number = ?", (roll,))
                 if not cursor.fetchone():
                     continue
 
@@ -154,7 +155,7 @@ def ingest_real_data(data_dir="data"):
                         
                     cursor.execute("""
                         INSERT INTO performance (roll_number, week_number, ca_score, lab_score, assignments_submitted)
-                        VALUES (%s, %s, %s, %s, %s)
+                        VALUES (?, ?, ?, ?, ?)
                     """, (roll, i + 1, score, 80.0, 5))
         except Exception as e:
             print(f"Error processing {csv_file}: {e}")
@@ -165,24 +166,20 @@ def ingest_real_data(data_dir="data"):
     cursor.execute("SELECT roll_number FROM students")
     all_rolls = [r[0] for r in cursor.fetchall()]
     
-    import random
-    from datetime import datetime, timedelta
-    
     attendance_data = []
     for roll in all_rolls:
         prob = random.uniform(0.4, 0.95)
         for d in range(30):
-            ts = (datetime.now() - timedelta(days=d))
+            ts = (datetime.now() - timedelta(days=d)).strftime('%Y-%m-%d %H:%M:%S')
             status = "PRESENT" if random.random() < prob else "ABSENT"
             attendance_data.append((roll, ts, status))
     
-    from psycopg2.extras import execute_values
-    execute_values(cursor, "INSERT INTO attendance (roll_number, timestamp, status) VALUES %s", attendance_data)
+    cursor.executemany("INSERT INTO attendance (roll_number, timestamp, status) VALUES (?, ?, ?)", attendance_data)
     print(f"Generated synthetic attendance for {len(all_rolls)} students.")
 
     conn.commit()
     conn.close()
-    print("Real data ingestion to PostgreSQL complete.")
+    print("Real data ingestion to SQLite complete.")
 
 if __name__ == "__main__":
     ingest_real_data()

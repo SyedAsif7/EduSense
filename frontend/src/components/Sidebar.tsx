@@ -24,15 +24,18 @@ const Sidebar: React.FC<SidebarProps> = ({ role, activeTab, setActiveTab, handle
   ];
 
   return (
-    <div className="w-64 bg-slate-900 text-slate-300 flex flex-col h-screen sticky top-0">
+    <div className="w-64 bg-slate-950 text-slate-300 flex flex-col h-screen sticky top-0 border-r border-white/5">
       <div className="p-8">
         <div className="flex items-center space-x-3 mb-2">
-          <div className="bg-indigo-500 p-2 rounded-lg">
-            <BarChart2 className="text-white w-6 h-6" />
+          <div className="relative">
+            <div className="absolute inset-0 bg-indigo-500 blur-lg opacity-40" />
+            <div className="relative bg-gradient-to-br from-indigo-500 to-purple-600 p-2.5 rounded-xl">
+              <BarChart2 className="text-white w-5 h-5" />
+            </div>
           </div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">EduSense</h2>
+          <h2 className="text-xl font-bold text-white tracking-tight">EduSense</h2>
         </div>
-        <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest ml-11">
+        <p className="text-xs font-semibold text-white/30 uppercase tracking-widest ml-12">
           {role} Portal
         </p>
       </div>
@@ -42,38 +45,38 @@ const Sidebar: React.FC<SidebarProps> = ({ role, activeTab, setActiveTab, handle
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 group ${
+            className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 group ${
               activeTab === item.id 
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' 
-                : 'hover:bg-slate-800 hover:text-white'
+                ? 'bg-gradient-to-r from-indigo-500/15 to-purple-500/10 text-white border border-indigo-500/20 shadow-lg shadow-indigo-500/5' 
+                : 'hover:bg-white/5 hover:text-white border border-transparent'
             }`}
           >
             <div className="flex items-center space-x-3">
-              <span className={activeTab === item.id ? 'text-white' : 'text-slate-400 group-hover:text-indigo-400'}>
+              <span className={activeTab === item.id ? 'text-indigo-400' : 'text-slate-400 group-hover:text-indigo-400'}>
                 {item.icon}
               </span>
               <span className="font-medium">{item.label}</span>
             </div>
-            {activeTab === item.id && <ChevronRight size={16} />}
+            {activeTab === item.id && <ChevronRight size={16} className="text-indigo-400" />}
           </button>
         ))}
       </nav>
 
       <div className="p-4 mt-auto">
-        <div className="bg-slate-800/50 rounded-2xl p-4 mb-4 border border-slate-700/50">
+        <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-4 mb-4 border border-white/10">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/20">
               {(sessionStorage.getItem('full_name') || role)[0]}
             </div>
             <div className="overflow-hidden">
               <p className="text-sm font-bold text-white truncate">{sessionStorage.getItem('full_name') || 'Administrator'}</p>
-              <p className="text-xs text-slate-500 truncate">{role.toLowerCase()}@edusense.edu</p>
+              <p className="text-xs text-white/40 truncate">{role.toLowerCase()}@edusense.edu</p>
             </div>
           </div>
         </div>
         <button
           onClick={handleLogout}
-          className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-red-500/10 hover:text-red-500 transition-colors duration-200"
+          className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors duration-200 border border-transparent hover:border-red-500/10"
         >
           <LogOut size={20} />
           <span className="font-medium">Sign Out</span>

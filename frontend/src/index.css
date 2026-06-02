@@ -3,8 +3,15 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    @apply antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 }
@@ -47,4 +54,50 @@
 /* Glassmorphism utility */
 .glass {
   @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-xl;
+}
+
+/* Login page bubble animation */
+@keyframes bubbleRise {
+  0% {
+    bottom: -100px;
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(100px);
+  }
+  100% {
+    bottom: 110vh;
+    transform: translateX(-200px);
+  }
+}
+
+.login-bubble {
+  position: absolute;
+  bottom: -100px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  animation: bubbleRise 15s infinite ease-in;
+}
+
+/* Floating title letters */
+@keyframes letterFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Shake animation */
+@keyframes loginShake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.login-shake {
+  animation: loginShake 0.5s;
+}
+
+/* Button shimmer */
+@keyframes btnShimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
 }

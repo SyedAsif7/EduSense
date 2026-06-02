@@ -1,16 +1,29 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { 
   Users, 
   ShieldCheck, 
   BrainCircuit, 
-  LineChart, 
   Zap, 
   ArrowRight, 
   CheckCircle2,
-  Lock,
   MessageCircle,
-  BarChart3
+  BarChart3,
+  ChevronDown,
+  Globe,
+  Database,
+  Cpu,
+  GraduationCap,
+  TrendingUp,
+  Eye,
+  Bell,
+  Activity,
+  Lock,
+  Sparkles,
+  ArrowUpRight,
+  Play,
+  Menu,
+  X
 } from 'lucide-react';
 
 interface LandingPageProps {
@@ -18,220 +31,548 @@ interface LandingPageProps {
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick }) => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { scrollYProgress } = useScroll();
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+  const heroScale = useTransform(scrollYProgress, [0, 0.15], [1, 0.95]);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="bg-indigo-600 p-2 rounded-xl shadow-lg shadow-indigo-200">
-              <Users className="text-white w-6 h-6" />
-            </div>
-            <span className="text-2xl font-black text-slate-900 tracking-tight">EduSense</span>
-          </div>
-          
-          <div className="hidden md:flex items-center space-x-10 text-sm font-bold text-slate-500 uppercase tracking-widest">
-            <a href="#features" className="hover:text-indigo-600 transition-colors">Features</a>
-            <a href="#about" className="hover:text-indigo-600 transition-colors">About</a>
-            <a href="#tech" className="hover:text-indigo-600 transition-colors">Technology</a>
-          </div>
+    <div className="min-h-screen font-sans text-white overflow-x-hidden relative bg-slate-950">
+      {/* Background Video */}
+      <div className="fixed inset-0 z-0">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/background_video.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-slate-950/60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-transparent to-slate-950" />
+      </div>
 
-          <button 
-            onClick={onLoginClick}
-            className="bg-slate-900 text-white px-8 py-3 rounded-xl font-bold text-sm uppercase tracking-widest shadow-xl shadow-slate-200 hover:bg-indigo-600 transition-all hover:scale-105 active:scale-95"
-          >
-            Portal Login
-          </button>
-        </div>
-      </nav>
+      {/* Content */}
+      <div className="relative z-10">
 
-      {/* Hero Section */}
-      <section className="pt-40 pb-20 px-6 relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-50/50 rounded-full blur-3xl -z-10" />
-        
-        <div className="max-w-5xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <span className="inline-block bg-indigo-50 text-indigo-600 px-6 py-2 rounded-full text-xs font-black uppercase tracking-[0.2em] mb-8 border border-indigo-100">
-              AI-Powered Student Success System
-            </span>
-            <h1 className="text-6xl md:text-8xl font-black text-slate-900 tracking-tight mb-10 leading-[1.1]">
-              Predicting <span className="text-indigo-600">Success</span>,<br />
-              Preventing Failure.
-            </h1>
-            <p className="text-xl text-slate-500 font-medium max-w-2xl mx-auto mb-12 leading-relaxed">
-              An enterprise-grade educational analytics platform integrating Biometric Attendance, 
-              Predictive ML Risk Scoring, and Explainable AI for actionable academic insights.
-            </p>
+        {/* Navigation */}
+        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          isScrolled ? 'bg-slate-950/80 backdrop-blur-2xl border-b border-white/5 py-3' : 'bg-transparent py-5'
+        }`}>
+          <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center space-x-3"
+            >
+              <div className="relative">
+                <div className="absolute inset-0 bg-indigo-500 blur-lg opacity-50" />
+                <div className="relative bg-gradient-to-br from-indigo-500 to-purple-600 p-2.5 rounded-xl">
+                  <GraduationCap className="text-white w-5 h-5" />
+                </div>
+              </div>
+              <span className="text-xl font-bold text-white">EduSense</span>
+            </motion.div>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <button 
+            <div className="hidden md:flex items-center space-x-1">
+              {['Features', 'Technology', 'About'].map((item) => (
+                <a 
+                  key={item} 
+                  href={`#${item.toLowerCase()}`} 
+                  className="px-4 py-2 text-sm text-white/80 hover:text-white transition-colors rounded-lg hover:bg-white/5 font-medium"
+                >
+                  {item}
+                </a>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-3">
+              <motion.button 
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={onLoginClick}
-                className="w-full sm:w-auto bg-slate-900 text-white px-10 py-5 rounded-2xl font-black text-lg shadow-2xl shadow-slate-200 hover:bg-indigo-600 transition-all hover:scale-105 flex items-center justify-center group"
+                className="hidden md:flex items-center gap-2 bg-white text-slate-900 px-5 py-2.5 rounded-full font-medium text-sm hover:bg-white/90 transition-all"
               >
-                Launch Dashboard
-                <ArrowRight className="ml-3 group-hover:translate-x-1 transition-transform" />
+                Get Started
+                <ArrowUpRight size={16} />
+              </motion.button>
+              <button 
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 text-white/70 hover:text-white"
+              >
+                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
-              <a href="#features" className="w-full sm:w-auto bg-white text-slate-900 border-2 border-slate-100 px-10 py-5 rounded-2xl font-black text-lg hover:bg-slate-50 transition-all text-center">
-                Explore Features
-              </a>
-            </div>
-          </motion.div>
-
-          {/* Dashboard Preview */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="mt-24 relative"
-          >
-            <div className="absolute inset-0 bg-indigo-600/20 blur-[120px] rounded-full -z-10 opacity-50" />
-            <img 
-              src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
-              alt="Dashboard Preview" 
-              className="rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] border border-white/50 w-full object-cover h-[500px]"
-            />
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Features Grid */}
-      <section id="features" className="py-32 px-6 bg-slate-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-24">
-            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6">Built for Institutional Excellence</h2>
-            <p className="text-slate-500 font-bold text-lg">Four core pillars driving the next generation of education.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <FeatureCard 
-              icon={<ShieldCheck size={32} />}
-              title="Biometric Attendance"
-              description="Real-time facial recognition with 128-D biometric signatures for contactless, accurate tracking."
-              color="indigo"
-            />
-            <FeatureCard 
-              icon={<BrainCircuit size={32} />}
-              title="Predictive Analytics"
-              description="XGBoost & Random Forest ensemble models predicting student risk with 90%+ accuracy."
-              color="purple"
-            />
-            <FeatureCard 
-              icon={<BarChart3 size={32} />}
-              title="Explainable AI"
-              description="SHAP integration providing the 'Why' behind every risk flag for actionable interventions."
-              color="amber"
-            />
-            <FeatureCard 
-              icon={<MessageCircle size={32} />}
-              title="Automated Alerts"
-              description="Multi-channel notifications via SMS, WhatsApp, and Email for instant parent-teacher sync."
-              color="emerald"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-32 px-6 bg-slate-900 text-white overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] -mr-48 -mt-48" />
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-          <div>
-            <h2 className="text-5xl font-black leading-tight mb-8">Data-Driven Success for Every Student</h2>
-            <p className="text-slate-400 text-xl leading-relaxed mb-12">
-              EduSense empowers the Computer Science department at SSIEMS with real-time 
-              intelligence, ensuring no student falls through the cracks.
-            </p>
-            <div className="grid grid-cols-2 gap-10">
-              <div>
-                <p className="text-5xl font-black text-indigo-400 mb-2">216</p>
-                <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Active Students</p>
-              </div>
-              <div>
-                <p className="text-5xl font-black text-indigo-400 mb-2">95%</p>
-                <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Data Accuracy</p>
-              </div>
             </div>
           </div>
-          <div className="relative">
-            <div className="bg-white/5 backdrop-blur-xl rounded-[3rem] p-10 border border-white/10">
-              <div className="space-y-6">
-                {[
-                  "Automated Face Recognition Ingress",
-                  "20+ Behavioral Feature Processing",
-                  "Real-time SHAP Factor Calculation",
-                  "Automated Multi-Channel Alerting"
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center space-x-4">
-                    <CheckCircle2 className="text-indigo-400" size={24} />
-                    <span className="text-lg font-bold text-slate-200">{item}</span>
-                  </div>
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="md:hidden bg-slate-950/95 backdrop-blur-2xl border-t border-white/5 mt-3"
+            >
+              <div className="max-w-7xl mx-auto px-6 py-4 space-y-2">
+                {['Features', 'Technology', 'About'].map((item) => (
+                  <a key={item} href={`#${item.toLowerCase()}`} className="block px-4 py-3 text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+                    {item}
+                  </a>
                 ))}
+                <button onClick={onLoginClick} className="w-full mt-2 bg-white text-slate-900 px-5 py-3 rounded-full font-medium text-sm">
+                  Get Started
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </nav>
+
+        {/* Hero Section */}
+        <motion.section style={{ opacity: heroOpacity, scale: heroScale }} className="min-h-screen flex items-center justify-center px-6 relative">
+          <div className="max-w-6xl mx-auto text-center pt-20">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+            >
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+                className="inline-flex items-center space-x-2 bg-white/5 backdrop-blur-md text-white/80 px-4 py-2 rounded-full text-sm mb-10 border border-white/10"
+              >
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span>AI-Powered Academic Intelligence</span>
+              </motion.div>
+              
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-bold text-white tracking-tight mb-8 leading-[1.05]">
+                Where Data Meets
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">
+                  Student Success
+                </span>
+              </h1>
+              
+              <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto mb-12 leading-relaxed font-light">
+                Transform attendance tracking, predict academic outcomes, and intervene early with our AI-powered intelligence platform.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={onLoginClick}
+                  className="group w-full sm:w-auto bg-white text-slate-900 px-8 py-4 rounded-full font-semibold text-base hover:bg-white/90 transition-all flex items-center justify-center gap-2"
+                >
+                  Launch Dashboard
+                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </motion.button>
+                <a 
+                  href="#features" 
+                  className="group w-full sm:w-auto flex items-center justify-center gap-2 text-white/90 hover:text-white px-8 py-4 rounded-full font-medium text-base border border-white/20 hover:border-white/30 hover:bg-white/5 transition-all"
+                >
+                  <Play size={16} className="group-hover:scale-110 transition-transform" />
+                  See How It Works
+                </a>
+              </div>
+            </motion.div>
+
+            {/* Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+              className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto"
+            >
+              <StatPill value="95%" label="Accuracy" />
+              <StatPill value="500+" label="Students" />
+              <StatPill value="24/7" label="Monitoring" />
+              <StatPill value="< 1s" label="Recognition" />
+            </motion.div>
+          </div>
+
+          <motion.div 
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          >
+            <div className="w-6 h-10 rounded-full border-2 border-white/20 flex items-start justify-center p-1.5">
+              <motion.div 
+                animate={{ y: [0, 12, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="w-1.5 h-1.5 rounded-full bg-white/50" 
+              />
+            </div>
+          </motion.div>
+        </motion.section>
+
+        {/* Features Section */}
+        <section id="features" className="py-32 px-6 relative">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="max-w-3xl mb-20"
+            >
+              <div className="flex items-center gap-2 text-indigo-400 text-sm font-medium mb-4">
+                <Sparkles size={16} />
+                <span className="uppercase tracking-widest">Core Capabilities</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
+                Everything you need to transform student outcomes
+              </h2>
+              <p className="text-lg text-white/65 leading-relaxed">
+                A comprehensive suite of tools designed for modern educational institutions.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FeatureCard 
+                icon={<Eye size={24} />}
+                title="Biometric Attendance"
+                description="Facial recognition with 128-D embeddings. No cards, no pins — just walk in and get marked present automatically."
+                features={["99.2% recognition accuracy", "Real-time processing", "Anti-spoofing protection"]}
+                accentColor="indigo"
+                index={0}
+              />
+              <FeatureCard 
+                icon={<BrainCircuit size={24} />}
+                title="Predictive Analytics"
+                description="Machine learning models that identify at-risk students weeks before traditional methods."
+                features={["Ensemble ML models", "Early warning system", "Trend analysis"]}
+                accentColor="purple"
+                index={1}
+              />
+              <FeatureCard 
+                icon={<BarChart3 size={24} />}
+                title="Explainable AI (XAI)"
+                description="Understand every prediction with SHAP values. No black boxes — complete transparency."
+                features={["SHAP analysis", "Feature importance", "Decision insights"]}
+                accentColor="emerald"
+                index={2}
+              />
+              <FeatureCard 
+                icon={<Bell size={24} />}
+                title="Smart Notifications"
+                description="Automated alerts to parents, students, and faculty through SMS, WhatsApp, and email."
+                features={["Multi-channel delivery", "Customizable triggers", "Delivery tracking"]}
+                accentColor="amber"
+                index={3}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Technology Section */}
+        <section id="technology" className="py-32 px-6 relative">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+              <motion.div
+                initial={{ opacity: 0, x: -40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7 }}
+              >
+                <div className="flex items-center gap-2 text-indigo-400 text-sm font-medium mb-4">
+                  <Activity size={16} />
+                  <span className="uppercase tracking-widest">Live Dashboard</span>
+                </div>
+                <h2 className="text-4xl md:text-5xl font-bold text-white mb-8 tracking-tight leading-tight">
+                  Real-time insights at your fingertips
+                </h2>
+                <p className="text-white/65 text-lg leading-relaxed mb-10">
+                  Monitor attendance trends, track risk levels, and make data-driven decisions with our intuitive dashboard.
+                </p>
+                
+                <div className="space-y-4">
+                  {[
+                    { icon: <Database size={18} />, text: "PostgreSQL-backed real-time data" },
+                    { icon: <Cpu size={18} />, text: "XGBoost + Random Forest ensemble" },
+                    { icon: <Globe size={18} />, text: "Accessible from any device" },
+                    { icon: <Lock size={18} />, text: "Role-based access control" }
+                  ].map((item, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.1 }}
+                      className="flex items-center gap-4 group"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500/10 group-hover:border-indigo-500/20 transition-colors">
+                        {item.icon}
+                      </div>
+                      <span className="text-white/80 font-medium">{item.text}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+              
+              {/* Dashboard Preview Card */}
+              <motion.div 
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7 }}
+                className="relative"
+              >
+                <div className="absolute -inset-8 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 blur-3xl rounded-full" />
+                <div className="relative bg-slate-900/80 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden shadow-2xl">
+                  {/* Header */}
+                  <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                      <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                      <div className="w-3 h-3 rounded-full bg-green-500/80" />
+                    </div>
+                    <span className="text-xs text-white/30">EduSense Dashboard</span>
+                    <div className="w-12" />
+                  </div>
+                  {/* Content */}
+                  <div className="p-6 space-y-4">
+                    {/* Mini stats row */}
+                    <div className="grid grid-cols-3 gap-3">
+                      <DashStat icon={<Users size={16} />} value="216" label="Active" color="indigo" />
+                      <DashStat icon={<TrendingUp size={16} />} value="78.5%" label="Attendance" color="emerald" />
+                      <DashStat icon={<Activity size={16} />} value="34" label="At Risk" color="amber" />
+                    </div>
+                    {/* Chart placeholder */}
+                    <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-sm text-white/50">Weekly Attendance</span>
+                        <span className="text-xs text-emerald-400 font-medium">+5.2% ↑</span>
+                      </div>
+                      <div className="flex items-end gap-2 h-24">
+                        {[65, 72, 68, 80, 75, 82, 78].map((h, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ height: 0 }}
+                            whileInView={{ height: `${h}%` }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.05, duration: 0.5 }}
+                            className="flex-1 bg-gradient-to-t from-indigo-500/40 to-indigo-400/80 rounded-lg"
+                          />
+                        ))}
+                      </div>
+                      <div className="flex justify-between mt-2">
+                        {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
+                          <span key={i} className="text-[10px] text-white/30 flex-1 text-center">{d}</span>
+                        ))}
+                      </div>
+                    </div>
+                    {/* Risk indicators */}
+                    <div className="flex gap-2">
+                      <div className="flex-1 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 text-center">
+                        <span className="text-emerald-400 text-lg font-bold">68%</span>
+                        <span className="text-white/40 text-xs ml-1">Low</span>
+                      </div>
+                      <div className="flex-1 bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-3 text-center">
+                        <span className="text-amber-400 text-lg font-bold">22%</span>
+                        <span className="text-white/40 text-xs ml-1">Med</span>
+                      </div>
+                      <div className="flex-1 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-center">
+                        <span className="text-red-400 text-lg font-bold">10%</span>
+                        <span className="text-white/40 text-xs ml-1">High</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* How It Works */}
+        <section className="py-32 px-6 relative">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-20"
+            >
+              <div className="flex items-center justify-center gap-2 text-indigo-400 text-sm font-medium mb-4">
+                <Zap size={16} />
+                <span className="uppercase tracking-widest">Workflow</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">How EduSense Works</h2>
+              <p className="text-white/65 text-lg max-w-2xl mx-auto">From entry to insight in seconds.</p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              {[
+                { step: "01", title: "Walk In", desc: "Student enters classroom and camera detects face", icon: <Eye size={20} /> },
+                { step: "02", title: "Recognize", desc: "128-D embedding matched against enrolled database", icon: <ShieldCheck size={20} /> },
+                { step: "03", title: "Analyze", desc: "ML models update risk score in real-time", icon: <BrainCircuit size={20} /> },
+                { step: "04", title: "Alert", desc: "Stakeholders notified if intervention needed", icon: <Bell size={20} /> }
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.15 }}
+                  className="relative group"
+                >
+                  {i < 3 && (
+                    <div className="hidden md:block absolute top-12 left-full w-full h-px bg-gradient-to-r from-white/20 to-transparent z-0" />
+                  )}
+                  <div className="relative bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all group-hover:bg-white/10">
+                    <div className="text-white/20 text-5xl font-bold absolute top-4 right-4">{item.step}</div>
+                    <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-4">
+                      {item.icon}
+                    </div>
+                    <h3 className="text-lg font-semibold text-white mb-2">{item.title}</h3>
+                    <p className="text-white/55 text-sm leading-relaxed">{item.desc}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section id="about" className="py-32 px-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="max-w-5xl mx-auto"
+          >
+            <div className="relative bg-gradient-to-br from-indigo-600/20 to-purple-600/20 backdrop-blur-xl rounded-[2rem] p-12 md:p-20 border border-white/10 text-center overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl" />
+              
+              <div className="relative z-10">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl mb-8 shadow-lg shadow-indigo-500/20">
+                  <GraduationCap className="text-white w-8 h-8" />
+                </div>
+                <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
+                  Ready to transform your institution?
+                </h2>
+                <p className="text-white/65 text-lg mb-10 max-w-xl mx-auto">
+                  Join the future of academic intelligence. Start making data-driven decisions today.
+                </p>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={onLoginClick}
+                    className="bg-white text-slate-900 px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/90 transition-all flex items-center gap-2"
+                  >
+                    Access Portal
+                    <ArrowRight size={18} />
+                  </motion.button>
+                  <a href="#features" className="text-white/80 hover:text-white font-medium transition-colors flex items-center gap-2">
+                    Learn more <ArrowUpRight size={16} />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </section>
+
+        {/* Footer */}
+        <footer className="py-12 px-6 border-t border-white/5">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex items-center space-x-3">
+                <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-2 rounded-lg">
+                  <GraduationCap className="text-white w-4 h-4" />
+                </div>
+                <span className="text-lg font-bold text-white">EduSense</span>
+                <span className="text-white/20">|</span>
+                <span className="text-white/40 text-sm font-medium">MSPM's SSIEMS CSE Department</span>
+              </div>
+              <div className="flex items-center space-x-6 text-sm text-white/40">
+                <a href="#" className="hover:text-white/70 transition-colors">Privacy</a>
+                <a href="#" className="hover:text-white/70 transition-colors">Terms</a>
+                <span>© 2026</span>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </footer>
 
-      {/* CTA Section */}
-      <section className="py-32 px-6">
-        <div className="max-w-5xl mx-auto bg-indigo-600 rounded-[4rem] p-16 md:p-24 text-center text-white relative overflow-hidden shadow-2xl shadow-indigo-200">
-          <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full -ml-32 -mt-32 blur-3xl" />
-          <h2 className="text-5xl md:text-6xl font-black mb-10 tracking-tight">Ready to transform your department?</h2>
-          <button 
-            onClick={onLoginClick}
-            className="bg-white text-indigo-600 px-12 py-6 rounded-2xl font-black text-xl shadow-xl hover:bg-slate-50 transition-all hover:scale-105 active:scale-95"
-          >
-            Access Portal Now
-          </button>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-20 px-6 border-t border-slate-100">
-        <div className="max-w-7xl mx-auto flex flex-col md:row items-center justify-between gap-10">
-          <div className="flex items-center space-x-3">
-            <div className="bg-indigo-600 p-2 rounded-xl shadow-lg shadow-indigo-200">
-              <Users className="text-white w-5 h-5" />
-            </div>
-            <span className="text-xl font-black text-slate-900 tracking-tight">EduSense</span>
-          </div>
-          <p className="text-slate-400 font-bold text-sm">
-            Developed for SSIEMS Computer Science & Engineering Department.
-          </p>
-          <div className="flex space-x-8 text-sm font-black text-slate-400 uppercase tracking-widest">
-            <a href="#" className="hover:text-indigo-600">Privacy</a>
-            <a href="#" className="hover:text-indigo-600">Terms</a>
-            <a href="#" className="hover:text-indigo-600">Contact</a>
-          </div>
-        </div>
-      </footer>
+      </div>
     </div>
   );
 };
 
-const FeatureCard = ({ icon, title, description, color }: any) => {
-  const colors: any = {
-    indigo: "bg-indigo-50 text-indigo-600",
-    purple: "bg-purple-50 text-purple-600",
-    amber: "bg-amber-50 text-amber-600",
-    emerald: "bg-emerald-50 text-emerald-600"
+// --- Sub Components ---
+
+const StatPill = ({ value, label }: { value: string; label: string }) => (
+  <div className="bg-white/5 backdrop-blur-md rounded-2xl px-5 py-4 border border-white/10">
+    <div className="text-2xl font-bold text-white tracking-tight">{value}</div>
+    <div className="text-white/55 text-sm mt-0.5 font-medium">{label}</div>
+  </div>
+);
+
+const FeatureCard = ({ icon, title, description, features, accentColor, index }: any) => {
+  const colorMap: Record<string, string> = {
+    indigo: "from-indigo-500 to-blue-500 shadow-indigo-500/20",
+    purple: "from-purple-500 to-pink-500 shadow-purple-500/20",
+    emerald: "from-emerald-500 to-teal-500 shadow-emerald-500/20",
+    amber: "from-amber-500 to-orange-500 shadow-amber-500/20"
+  };
+  const iconBgMap: Record<string, string> = {
+    indigo: "bg-indigo-500/10 border-indigo-500/20 text-indigo-400",
+    purple: "bg-purple-500/10 border-purple-500/20 text-purple-400",
+    emerald: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400",
+    amber: "bg-amber-500/10 border-amber-500/20 text-amber-400"
   };
 
   return (
     <motion.div 
-      whileHover={{ y: -10 }}
-      className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all group"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      whileHover={{ y: -4 }}
+      className="group bg-white/[0.03] backdrop-blur-md p-8 rounded-3xl border border-white/[0.06] hover:border-white/10 hover:bg-white/[0.05] transition-all duration-300"
     >
-      <div className={`${colors[color]} w-16 h-16 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform`}>
+      <div className={`w-12 h-12 rounded-xl border flex items-center justify-center mb-6 ${iconBgMap[accentColor]}`}>
         {icon}
       </div>
-      <h3 className="text-2xl font-black text-slate-900 mb-4 tracking-tight">{title}</h3>
-      <p className="text-slate-500 font-medium leading-relaxed">{description}</p>
+      <h3 className="text-xl font-bold text-white mb-3">{title}</h3>
+      <p className="text-white/60 text-sm leading-relaxed mb-5">{description}</p>
+      <div className="space-y-2">
+        {features.map((f: string, i: number) => (
+          <div key={i} className="flex items-center gap-2">
+            <CheckCircle2 size={14} className="text-white/50" />
+            <span className="text-white/65 text-sm">{f}</span>
+          </div>
+        ))}
+      </div>
     </motion.div>
+  );
+};
+
+const DashStat = ({ icon, value, label, color }: { icon: React.ReactNode; value: string; label: string; color: string }) => {
+  const colorMap: Record<string, string> = {
+    indigo: "text-indigo-400",
+    emerald: "text-emerald-400",
+    amber: "text-amber-400"
+  };
+  return (
+    <div className="bg-white/5 rounded-xl p-3 border border-white/5">
+      <div className={`${colorMap[color]} mb-1`}>{icon}</div>
+      <div className="text-white/80 text-lg font-semibold">{value}</div>
+      <div className="text-white/45 text-xs font-medium">{label}</div>
+    </div>
   );
 };
 

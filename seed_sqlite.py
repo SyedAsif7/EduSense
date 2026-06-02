@@ -11,6 +11,7 @@ def seed_sqlite_db(db_path="edusense.db"):
     DROP TABLE IF EXISTS students;
     DROP TABLE IF EXISTS attendance;
     DROP TABLE IF EXISTS performance;
+    DROP TABLE IF EXISTS users;
 
     CREATE TABLE students (
         roll_number VARCHAR(20) PRIMARY KEY,
@@ -34,12 +35,35 @@ def seed_sqlite_db(db_path="edusense.db"):
         lab_score FLOAT,
         assignments_submitted INTEGER
     );
+
+    CREATE TABLE users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username VARCHAR(50) UNIQUE NOT NULL,
+        password VARCHAR(50) NOT NULL,
+        role VARCHAR(20) NOT NULL,
+        full_name VARCHAR(100)
+    );
     """)
+
+    # Seed users based on README
+    users = [
+        ('PVK', 'edu123', 'HOD', 'Prof. Pawar V.K.'),
+        ('DRS', 'edu123', 'FACULTY', 'Prof. Devkar R.S.'),
+        ('BPG', 'edu123', 'FACULTY', 'Prof. Bais P.G.'),
+        ('JPK', 'edu123', 'FACULTY', 'Prof. Jadhav P.K.'),
+        ('CS25301', '24022521242003', 'STUDENT', 'AYEWAR SANDIP BALASAHEB')
+    ]
+    cursor.executemany("INSERT INTO users (username, password, role, full_name) VALUES (?,?,?,?)", users)
 
     # Seed 50 students for better ML training
     roll_numbers = [f"CS253{str(i).zfill(2)}" for i in range(1, 51)]
     students = [(r, f"Student {r}", f"{r}@example.com", f"RFID_{r}") for r in roll_numbers]
     cursor.executemany("INSERT INTO students VALUES (?,?,?,?)", students)
+
+    # Add all students to users table for login
+    # Username: Roll Number, Password: PRN (from README example)
+    student_users = [(r, '24022521242003', 'STUDENT', f"Student {r}") for r in roll_numbers if r != 'CS25301']
+    cursor.executemany("INSERT INTO users (username, password, role, full_name) VALUES (?,?,?,?)", student_users)
 
     # Seed attendance (past 20 days) with variety
     attendance_data = []

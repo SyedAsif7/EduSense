@@ -35,12 +35,13 @@ if os.path.exists("xgb_model.pkl"):
 @app.route("/login", methods=["POST"])
 def login():
     data = request.json
-    username = data.get("username")
-    password = data.get("password")
+    username = data.get("username", "").strip()
+    password = str(data.get("password", "")).strip()
     
     conn = get_db_connection()
     cursor = get_dict_cursor(conn)
-    cursor.execute("SELECT * FROM users WHERE username=%s AND password=%s", (username, password))
+    # Case-insensitive username check for better UX
+    cursor.execute("SELECT * FROM users WHERE LOWER(username)=LOWER(?) AND password=?", (username, password))
     user = cursor.fetchone()
     conn.close()
     
@@ -79,7 +80,7 @@ def risk_heatmap():
 def attendance(roll_no):
     conn = get_db_connection()
     cursor = get_dict_cursor(conn)
-    cursor.execute("SELECT * FROM attendance WHERE roll_number=%s", (roll_no,))
+    cursor.execute("SELECT * FROM attendance WHERE roll_number=?", (roll_no,))
     rows = cursor.fetchall()
     conn.close()
     return jsonify(rows)
@@ -205,4 +206,5 @@ def send_alert():
         return jsonify({"msg": f"Failed to send {alert_type} alert"}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
