@@ -148,7 +148,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ handleLogin, onBack }) => {
       } else if (err.response.status === 401) {
         setError('Invalid username or password. Please try again.');
       } else {
-        setError(`Error: ${err.response.data?.msg || 'An unexpected error occurred.'}`);
+        const status = err.response.status;
+        const msg = err.response.data?.msg || err.response.data?.error || err.message;
+        setError(`Error ${status}: ${msg}`);
       }
       
       setShaking(true);

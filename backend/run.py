@@ -18,7 +18,7 @@ from db_config import get_db_connection, get_dict_cursor
 from backend.app.services.alert_service import AlertService
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*", "allow_headers": ["Authorization", "Content-Type"]}})
+CORS(app) # Simplified CORS for better compatibility
 
 # Logging for production debugging
 import os
@@ -127,26 +127,28 @@ def health():
 
 @app.route("/login", methods=["POST"])
 def login():
-    data = request.json
-    print(f"Login attempt: {data}")
-    username = data.get("username", "").strip()
-    password = str(data.get("password", "")).strip()
-    
-    conn = get_db_connection()
-    cursor = get_dict_cursor(conn)
-    # Case-insensitive username check for better UX
-    cursor.execute("SELECT * FROM users WHERE LOWER(username)=LOWER(?) AND password=?", (username, password))
-    user = cursor.fetchone()
-    print(f"User found: {user['username'] if user else 'None'}")
-    conn.close()
-    
-    if user:
-        # Identity must be a string for better compatibility across some JWT versions
-        identity = f"{username}|{user['role']}"
-        access_token = create_access_token(identity=identity)
-        return jsonify(access_token=access_token, role=user['role'], full_name=user['full_name'])
-    
-    return jsonify({"msg": "Bad username or password"}), 401
+    try:
+        data = request.json
+        username = data.get("username", "").strip()
+        password = str(data.get("password", "")).strip()
+        
+        conn = get_db_connection()
+        cursor = get_dict_cursor(conn)
+        # Case-insensitive username check for better UX
+        cursor.execute("SELECT * FROM users WHERE LOWER(username)=LOWER(?) AND password=?", (username, password))
+        user = cursor.fetchone()
+        conn.close()
+        
+        if user:
+            # Identity must be a string for better compatibility across some JWT versions
+            identity = f"{username}|{user['role']}"
+            access_token = create_access_token(identity=identity)
+            return jsonify(access_token=access_token, role=user['role'], full_name=user['full_name'])
+        
+        return jsonify({"msg": "Bad username or password"}), 401
+    except Exception as e:
+        print(f"Login error: {e}")
+        return jsonify({"msg": f"Internal server error: {str(e)}"}), 500
 
 @app.route("/me")
 @jwt_required()
