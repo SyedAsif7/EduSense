@@ -31,7 +31,17 @@ interface HODDashboardProps {
   view?: 'dashboard' | 'trends';
   externalSearch?: string;
   onSearchChange?: (val: string) => void;
+  onNavigate?: (tab: string) => void;
 }
+
+/* ─── Normalization Helper ─── */
+const normalizeBatch = (batch: string) => {
+  if (batch.includes('S.E.') || batch.includes('SE') || batch.includes('Second')) return 'SE';
+  if (batch.includes('T.E.') || batch.includes('TE') || batch.includes('Third')) return 'TE';
+  if (batch.includes('B.E.') || batch.includes('BE') || batch.includes('Final')) return 'BE';
+  if (batch.includes('F.E.') || batch.includes('FE') || batch.includes('First')) return 'FE';
+  return 'All';
+};
 
 /* ─── Mock trend data ─── */
 const MONTHLY_ATTENDANCE_TREND = [
@@ -81,13 +91,25 @@ const SUBJECT_TRENDS = [
 ];
 
 /* ─── Main Component ─── */
-const HODDashboard: React.FC<HODDashboardProps> = ({ view = 'dashboard', externalSearch = '', onSearchChange }) => {
+const HODDashboard: React.FC<HODDashboardProps> = ({ view = 'dashboard', externalSearch = '', onSearchChange, onNavigate }) => {
   const [activeTab, setActiveTab] = useState('analytics');
   const [stats, setStats] = useState<any>(null);
   const [faculties, setFaculties] = useState<any[]>([]);
   const [students, setStudents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedBatch, setSelectedBatch] = useState(localStorage.getItem('hod_selected_batch') || 'All');
+
+  const handleBatchChange = (batch: string) => {
+    const normalized = normalizeBatch(batch);
+    setSelectedBatch(normalized);
+    localStorage.setItem('hod_selected_batch', normalized);
+  };
+
+  const handleViewFullAnalytics = (batch: string) => {
+    handleBatchChange(batch);
+    if (onNavigate) onNavigate('trends');
+  };
 
   // Synchronize local search with external search
   useEffect(() => {
@@ -159,6 +181,17 @@ const HODDashboard: React.FC<HODDashboardProps> = ({ view = 'dashboard', externa
             <p className="text-white/50 font-medium text-sm md:text-lg">Computer Science & Engineering • Academic Trends 2022-26</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
+            <select 
+              value={selectedBatch}
+              onChange={(e) => handleBatchChange(e.target.value)}
+              className="bg-white/5 border border-white/10 text-white px-4 py-3 rounded-xl font-bold text-xs uppercase tracking-widest outline-none focus:border-indigo-500/50 transition-all"
+            >
+              <option value="All">All Batches</option>
+              <option value="FE">F.E. Batch</option>
+              <option value="SE">S.E. Batch</option>
+              <option value="TE">T.E. Batch</option>
+              <option value="BE">B.E. Batch</option>
+            </select>
             <button className="w-full sm:w-auto bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-[1.5rem] font-bold text-xs md:text-sm uppercase tracking-widest shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all flex items-center justify-center group">
               <Download size={18} className="mr-2 group-hover:translate-y-1 transition-transform" />
               Export Trends
@@ -196,10 +229,10 @@ const HODDashboard: React.FC<HODDashboardProps> = ({ view = 'dashboard', externa
                   <YAxis domain={[70, 95]} axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12, fontWeight: 600 }} />
                   <Tooltip cursor={{ stroke: 'rgba(255,255,255,0.1)' }} contentStyle={{ borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)', background: '#1e293b', color: '#fff' }} />
                   <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', fontWeight: 600, color: 'rgba(255,255,255,0.6)' }} />
-                  <Line type="monotone" dataKey="FE" stroke="#818cf8" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />
-                  <Line type="monotone" dataKey="SE" stroke="#a78bfa" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />
-                  <Line type="monotone" dataKey="TE" stroke="#34d399" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />
-                  <Line type="monotone" dataKey="BE" stroke="#fbbf24" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />
+                  {(selectedBatch === 'All' || selectedBatch === 'FE') && <Line type="monotone" dataKey="FE" stroke="#818cf8" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />}
+                  {(selectedBatch === 'All' || selectedBatch === 'SE') && <Line type="monotone" dataKey="SE" stroke="#a78bfa" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />}
+                  {(selectedBatch === 'All' || selectedBatch === 'TE') && <Line type="monotone" dataKey="TE" stroke="#34d399" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />}
+                  {(selectedBatch === 'All' || selectedBatch === 'BE') && <Line type="monotone" dataKey="BE" stroke="#fbbf24" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />}
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -389,7 +422,7 @@ const HODDashboard: React.FC<HODDashboardProps> = ({ view = 'dashboard', externa
         >
           {activeTab === 'analytics' && <AnalyticsView stats={stats} />}
           {activeTab === 'faculties' && <FacultyListView faculties={filteredFaculties} />}
-          {activeTab === 'students' && <StudentListView students={filteredStudents} />}
+          {activeTab === 'students' && <StudentListView students={filteredStudents} onViewFullAnalytics={handleViewFullAnalytics} />}
           {activeTab === 'management' && <ManagementView />}
         </motion.div>
       </AnimatePresence>
@@ -561,7 +594,7 @@ const FacultyListView = ({ faculties }: any) => (
 );
 
 /* ─── Student List View ─── */
-const StudentListView = ({ students }: any) => {
+const StudentListView = ({ students, onViewFullAnalytics }: any) => {
   // Normalize and filter students
   const seStudents = students.filter((s: any) => 
     s.class_name === 'S.E.' || s.class_name === 'SY' || s.class_name?.includes('SY')
@@ -575,15 +608,16 @@ const StudentListView = ({ students }: any) => {
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-      <ClassSection title="S.E. Batch" subtitle="Second Year" students={seStudents} color="emerald" />
-      <ClassSection title="T.E. Batch" subtitle="Third Year" students={teStudents} color="indigo" />
-      <ClassSection title="B.E. Batch" subtitle="Final Year" students={beStudents} color="purple" />
+      <ClassSection title="S.E. Batch" subtitle="Second Year" students={seStudents} color="emerald" onAnalytics={() => onViewFullAnalytics('SE')} />
+      <ClassSection title="T.E. Batch" subtitle="Third Year" students={teStudents} color="indigo" onAnalytics={() => onViewFullAnalytics('TE')} />
+      <ClassSection title="B.E. Batch" subtitle="Final Year" students={beStudents} color="purple" onAnalytics={() => onViewFullAnalytics('BE')} />
     </div>
   );
 };
 
-const ClassSection = ({ title, subtitle, students, color }: { title: string, subtitle: string, students: any[], color: string }) => (
+const ClassSection = ({ title, subtitle, students, color, onAnalytics }: { title: string, subtitle: string, students: any[], color: string, onAnalytics: () => void }) => (
   <div className="bg-white/[0.04] backdrop-blur-md rounded-[2.5rem] border border-white/[0.08] overflow-hidden flex flex-col h-[700px]">
+    {/* ... same header ... */}
     <div className="p-8 border-b border-white/5 bg-white/[0.01]">
       <div className="flex justify-between items-start mb-2">
         <h3 className="text-xl font-black text-white tracking-tight">{title}</h3>
@@ -594,6 +628,7 @@ const ClassSection = ({ title, subtitle, students, color }: { title: string, sub
       <p className="text-white/30 font-bold text-[10px] uppercase tracking-widest">{subtitle}</p>
     </div>
 
+    {/* ... table container ... */}
     <div className="flex-1 overflow-y-auto custom-scrollbar">
       {students.length === 0 ? (
         <div className="h-full flex flex-col items-center justify-center p-10 text-center space-y-4">
@@ -644,8 +679,12 @@ const ClassSection = ({ title, subtitle, students, color }: { title: string, sub
     </div>
     
     <div className="p-6 bg-white/[0.02] border-t border-white/5">
-      <button className="w-full py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-black text-white/40 uppercase tracking-[0.2em] transition-all">
+      <button 
+        onClick={onAnalytics}
+        className="w-full py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-black text-white/40 uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2"
+      >
         View Full Analytics
+        <ArrowUpRight size={14} />
       </button>
     </div>
   </div>

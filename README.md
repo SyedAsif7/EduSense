@@ -79,13 +79,27 @@ MSPM’S Shri Shivaji Institute of Engineering and Management Studies, Parbhani.
 
 ---
 
+## 🎓 Academic Batches (2025-26)
+
+| Batch | Students | Focus Area |
+| :--- | :--- | :--- |
+| **S.E. (Second Year)** | 71 | Foundation & Core Engineering |
+| **T.E. (Third Year)** | 75 | Advanced Systems & Algorithms |
+| **B.E. (Final Year)** | 70 | Research & Project Specialization |
+
+---
+
 ## 🔐 Login Credentials (Demo)
 
 | Role | Username | Password |
 | :--- | :--- | :--- |
-| **Student** | `CS225201` | `24022521242003` |
-| **Faculty (S.E)** | `DRS` | `edu123` |
 | **HOD** | `PVK` | `edu123` |
+| **Faculty (S.E)** | `DRS` | `edu123` |
+| **Faculty (T.E)** | `BPG` | `edu123` |
+| **Faculty (B.E)** | `JPK` | `edu123` |
+| **Student (S.E)** | `CS225201` | `24022521242003` |
+| **Student (T.E)** | `CS25301` | `2222521242041` |
+| **Student (B.E)** | `BECSE_1` | `2022521242021` |
 
 ---
 

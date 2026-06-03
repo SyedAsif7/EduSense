@@ -175,20 +175,53 @@ def ingest_real_data(data_dir="data"):
 
     print(f"Ingested marks from CSV files.")
 
-    # 4. Generate Synthetic Attendance for real students
+    # 4. Generate Synthetic Data for all students (Performance + Attendance)
     cursor.execute("SELECT roll_number FROM students")
     all_rolls = [r[0] for r in cursor.fetchall()]
     
     attendance_data = []
-    for roll in all_rolls:
-        prob = random.uniform(0.4, 0.95)
+    performance_data = []
+    
+    for i, roll in enumerate(all_rolls):
+        # Create a more realistic distribution: 75% Good, 15% At-Risk, 10% High-Risk
+        rand_val = random.random()
+        if rand_val < 0.75:
+            # Good students: High attendance, high marks
+            att_prob = random.uniform(0.78, 0.98)
+            avg_ca = random.uniform(14.0, 19.5) # Out of 20
+        elif rand_val < 0.90:
+            # At-risk students: Medium attendance, medium marks
+            att_prob = random.uniform(0.55, 0.77)
+            avg_ca = random.uniform(8.0, 13.5)
+        else:
+            # High-risk students: Low attendance, low marks
+            att_prob = random.uniform(0.15, 0.54)
+            avg_ca = random.uniform(2.0, 7.5)
+            
+        # Add some noise to the base probability for individual students
+        att_prob = max(0.1, min(0.99, att_prob + random.uniform(-0.05, 0.05)))
+            
+        # Attendance entries
         for d in range(30):
             ts = (datetime.now() - timedelta(days=d)).strftime('%Y-%m-%d %H:%M:%S')
-            status = "PRESENT" if random.random() < prob else "ABSENT"
+            # Add small daily noise
+            daily_prob = max(0.05, min(0.95, att_prob + random.uniform(-0.1, 0.1)))
+            status = "PRESENT" if random.random() < daily_prob else "ABSENT"
             attendance_data.append((roll, ts, status))
+            
+        # Performance entries (only if no data exists already from CSV)
+        cursor.execute("SELECT COUNT(*) FROM performance WHERE roll_number = ?", (roll,))
+        if cursor.fetchone()[0] == 0:
+            for w in range(1, 6): # 5 weeks of data
+                # Marks with weekly variation
+                ca_score = max(0, min(20, avg_ca + random.uniform(-3, 3)))
+                performance_data.append((roll, w, ca_score, random.uniform(70, 95), random.randint(3, 5)))
     
+    # Batch inserts
     cursor.executemany("INSERT INTO attendance (roll_number, timestamp, status) VALUES (?, ?, ?)", attendance_data)
-    print(f"Generated synthetic attendance for {len(all_rolls)} students.")
+    cursor.executemany("INSERT INTO performance (roll_number, week_number, ca_score, lab_score, assignments_submitted) VALUES (?, ?, ?, ?, ?)", performance_data)
+    
+    print(f"Generated synthetic intelligence for {len(all_rolls)} students.")
 
     conn.commit()
     conn.close()

@@ -408,15 +408,15 @@ def hod_dept_stats():
     return jsonify({
         "total_students": total_students,
         "total_faculties": 12,
-        "avg_attendance": 78.5,
-        "avg_success_rate": 92.0,
-        "at_risk_count": 34,
+        "avg_attendance": 84.2,
+        "avg_success_rate": 96.5,
+        "at_risk_count": 22,
         "avg_confidence": round(avg_conf, 3),
         "batch_distribution": [
-            {"name": "FE", "students": 60, "risk": 5},
-            {"name": "SE", "students": 58, "risk": 12},
-            {"name": "TE", "students": 52, "risk": 10},
-            {"name": "BE", "students": 46, "risk": 7}
+            {"name": "F.E.", "students": 60, "risk": 4},
+            {"name": "S.E.", "students": 71, "risk": 7},
+            {"name": "T.E.", "students": 75, "risk": 9},
+            {"name": "B.E.", "students": 70, "risk": 2}
         ]
     })
 

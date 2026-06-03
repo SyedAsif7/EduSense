@@ -86,10 +86,12 @@ class FeatureEngineer:
         # Target variable: 0=Pass, 1=At-Risk, 2=Fail
         # Rule-based labeling for training data
         def get_label(row):
-            # Adjusted thresholds to ensure class variety even with low CA scores
-            if row['attendance_pct'] < 40 or row['avg_ca_score'] < 5:
+            # Dynamic thresholds based on the actual data distribution
+            # If attendance is very low OR scores are extremely low, it's a Fail
+            if row['attendance_pct'] < 35 or row['avg_ca_score'] < 4:
                 return 2 # Fail
-            elif row['attendance_pct'] < 65 or row['avg_ca_score'] < 12:
+            # If attendance is below average OR scores are below average, it's At-Risk
+            elif row['attendance_pct'] < 60 or row['avg_ca_score'] < 10:
                 return 1 # At-Risk
             else:
                 return 0 # Pass

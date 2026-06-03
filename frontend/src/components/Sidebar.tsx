@@ -32,7 +32,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     { id: 'risk', label: 'Risk Analysis', icon: <AlertTriangle size={20} />, roles: ['FACULTY'] },
     { id: 'trends', label: 'Dept Trends', icon: <BarChart2 size={20} />, roles: ['HOD'] },
     { id: 'profile', label: 'My Profile', icon: <User size={20} />, roles: ['FACULTY', 'HOD', 'STUDENT'] },
-    { id: 'about', label: 'About Project', icon: <Info size={20} />, roles: ['FACULTY', 'HOD', 'STUDENT'] },
   ];
 
   return (

@@ -7,7 +7,6 @@ import FacultyDashboard from './components/FacultyDashboard';
 import HODDashboard from './components/HODDashboard';
 import StudentDashboard from './components/StudentDashboard';
 import ProfilePage from './components/ProfilePage';
-import AboutUs from './components/AboutUs';
 import { Bell, Search, Settings, HelpCircle, Menu, X } from 'lucide-react';
 
 const App = () => {
@@ -126,14 +125,13 @@ const App = () => {
           {activeTab === 'dashboard' && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
               {role === 'FACULTY' && <FacultyDashboard externalSearch={searchTerm} onSearchChange={setSearchTerm} />}
-              {role === 'HOD' && <HODDashboard externalSearch={searchTerm} onSearchChange={setSearchTerm} />}
+              {role === 'HOD' && <HODDashboard onNavigate={setActiveTab} externalSearch={searchTerm} onSearchChange={setSearchTerm} />}
               {role === 'STUDENT' && <StudentDashboard rollNo={username!} />}
             </div>
           )}
           {activeTab === 'profile' && <ProfilePage />}
-          {activeTab === 'about' && <AboutUs />}
           {activeTab === 'risk' && role === 'FACULTY' && <FacultyDashboard view="risk" externalSearch={searchTerm} onSearchChange={setSearchTerm} />}
-          {activeTab === 'trends' && role === 'HOD' && <HODDashboard view="trends" externalSearch={searchTerm} onSearchChange={setSearchTerm} />}
+          {activeTab === 'trends' && role === 'HOD' && <HODDashboard onNavigate={setActiveTab} view="trends" externalSearch={searchTerm} onSearchChange={setSearchTerm} />}
         </main>
       </div>
     </div>
