@@ -102,27 +102,40 @@ const LoginPage: React.FC<LoginPageProps> = ({ handleLogin, onBack }) => {
 
   /* 3D tilt */
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const mx = useMotionValue(0.5);
-  const my = useMotionValue(0.5);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
   const springConfig = { stiffness: 150, damping: 20 };
-  const rotX = useSpring(useTransform(my, [0, 1], [6, -6]), springConfig);
-  const rotY = useSpring(useTransform(mx, [0, 1], [-6, 6]), springConfig);
+  const rotX = useSpring(useTransform(mouseY, [-200, 200], [6, -6]), springConfig);
+  const rotY = useSpring(useTransform(mouseX, [-200, 200], [-6, 6]), springConfig);
 
+  /* Mouse Move for 3D Tilt - Throttled for performance */
+  const lastMove = useRef(0);
   const onMouseMove = useCallback((e: MouseEvent) => {
-    mx.set(e.clientX / window.innerWidth);
-    my.set(e.clientY / window.innerHeight);
-  }, [mx, my]);
+    const now = Date.now();
+    if (now - lastMove.current < 16) return; // ~60fps throttle
+    lastMove.current = now;
+
+    if (!wrapperRef.current) return;
+    const rect = wrapperRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    mouseX.set(x - centerX);
+    mouseY.set(y - centerY);
+  }, [mouseX, mouseY]);
 
   const onMouseLeave = useCallback(() => {
-    mx.set(0.5);
-    my.set(0.5);
-  }, [mx, my]);
+    mouseX.set(0);
+    mouseY.set(0);
+  }, [mouseX, mouseY]);
 
   useEffect(() => {
-    document.addEventListener('mousemove', onMouseMove);
+    const handleMove = (e: MouseEvent) => onMouseMove(e);
+    window.addEventListener('mousemove', handleMove);
     document.addEventListener('mouseleave', onMouseLeave);
     return () => {
-      document.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mousemove', handleMove);
       document.removeEventListener('mouseleave', onMouseLeave);
     };
   }, [onMouseMove, onMouseLeave]);
@@ -137,8 +150,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ handleLogin, onBack }) => {
     try {
       await handleLogin(username, password);
       setIsLoading(false);
-      setSuccess('Login successful! Redirecting to dashboard...');
-      setTimeout(() => setExiting(true), 1500);
+      setSuccess('Login successful! Redirecting...');
+      setTimeout(() => setExiting(true), 600);
     } catch (err: any) {
       setIsLoading(false);
       console.error('Login error:', err);
@@ -174,8 +187,16 @@ const LoginPage: React.FC<LoginPageProps> = ({ handleLogin, onBack }) => {
   return (
     <div className="min-h-screen flex items-center justify-center overflow-hidden relative bg-slate-950">
       {/* Background Video */}
-      <div className="fixed inset-0 z-0">
-        <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
+      <div className="fixed inset-0 z-0 bg-slate-950">
+        <video 
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          poster="/background_poster.jpg"
+          className="absolute inset-0 w-full h-full object-cover opacity-60 transition-opacity duration-1000"
+          onCanPlayThrough={(e) => (e.currentTarget.style.opacity = "0.6")}
+        >
           <source src="/background_video.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-slate-950/70" />
@@ -214,6 +235,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ handleLogin, onBack }) => {
             rotateX: rotX,
             rotateY: rotY,
             transformStyle: 'preserve-3d',
+            willChange: 'transform'
           }}
           initial={{ opacity: 0, y: 60, scale: 0.9 }}
           animate={

@@ -69,13 +69,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick }) => {
   return (
     <div className="min-h-screen font-sans text-white overflow-x-hidden relative bg-slate-950">
       {/* Background Video */}
-      <div className="fixed inset-0 z-0">
+      <div className="fixed inset-0 z-0 bg-slate-950">
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover"
+          poster="/background_poster.jpg"
+          className="absolute inset-0 w-full h-full object-cover opacity-60 transition-opacity duration-1000"
+          onCanPlayThrough={(e) => (e.currentTarget.style.opacity = "0.6")}
         >
           <source src="/background_video.mp4" type="video/mp4" />
         </video>
@@ -160,7 +162,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick }) => {
         </nav>
 
         {/* Hero Section */}
-        <motion.section style={{ opacity: heroOpacity, scale: heroScale }} className="min-h-screen flex items-center justify-center px-6 relative">
+        <motion.section 
+          style={{ opacity: heroOpacity, scale: heroScale, willChange: 'transform, opacity' }} 
+          className="min-h-screen flex items-center justify-center px-6 relative"
+        >
           <div className="max-w-6xl mx-auto text-center pt-20">
             <motion.div
               initial={{ opacity: 0, y: 40 }}

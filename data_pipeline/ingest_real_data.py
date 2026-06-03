@@ -48,6 +48,12 @@ def ingest_real_data(data_dir="data"):
         lab_score FLOAT,
         assignments_submitted INTEGER
     );
+
+    -- Add indexes for faster lookups
+    CREATE INDEX idx_users_username ON users(username);
+    CREATE INDEX idx_students_roll ON students(roll_number);
+    CREATE INDEX idx_attendance_roll ON attendance(roll_number);
+    CREATE INDEX idx_performance_roll ON performance(roll_number);
     """)
 
     # 2. Ingest Students from JSON files

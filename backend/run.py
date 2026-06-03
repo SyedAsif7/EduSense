@@ -268,6 +268,9 @@ def attendance(roll_no):
     conn.close()
     return jsonify(rows)
 
+# SHAP Cache to speed up report generation
+SHAP_CACHE = {}
+
 @app.route("/student-report/<roll_no>")
 @jwt_required()
 def student_report(roll_no):
@@ -295,28 +298,33 @@ def student_report(roll_no):
         report["name"] = f"Student {roll_no}"
     
     try:
-        X = df.drop("roll_number", axis=1)
-        explainer = shap.TreeExplainer(xgb_model)
-        shap_values = explainer.shap_values(X)
-        
-        idx = student_data.index[0]
-        pred_class = xgb_model.predict(X.iloc[[idx]])[0]
-        
-        if isinstance(shap_values, list):
-            current_shap = shap_values[pred_class][idx]
+        # Check cache first
+        if roll_no in SHAP_CACHE:
+            report["top_factors"] = SHAP_CACHE[roll_no]
         else:
-            current_shap = shap_values[idx]
-
-        feature_names = X.columns.tolist()
-        top_indices = np.argsort(np.abs(current_shap))[-3:][::-1]
-        
-        top_factors = []
-        for i in top_indices:
-            factor_name = feature_names[i].replace("_", " ").title()
-            impact = "Positive" if current_shap[i] < 0 else "Negative"
-            top_factors.append({"factor": factor_name, "impact": impact})
+            X = df.drop("roll_number", axis=1)
+            explainer = shap.TreeExplainer(xgb_model)
+            shap_values = explainer.shap_values(X)
             
-        report["top_factors"] = top_factors
+            idx = student_data.index[0]
+            pred_class = xgb_model.predict(X.iloc[[idx]])[0]
+            
+            if isinstance(shap_values, list):
+                current_shap = shap_values[pred_class][idx]
+            else:
+                current_shap = shap_values[idx]
+
+            feature_names = X.columns.tolist()
+            top_indices = np.argsort(np.abs(current_shap))[-3:][::-1]
+            
+            top_factors = []
+            for i in top_indices:
+                factor_name = feature_names[i].replace("_", " ").title()
+                impact = "Positive" if current_shap[i] < 0 else "Negative"
+                top_factors.append({"factor": factor_name, "impact": impact})
+                
+            report["top_factors"] = top_factors
+            SHAP_CACHE[roll_no] = top_factors # Cache results
         
         class_averages = df.drop("roll_number", axis=1).mean().to_dict()
         report["class_averages"] = class_averages
