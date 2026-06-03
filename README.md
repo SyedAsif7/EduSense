@@ -2,89 +2,92 @@
 
 [![React](https://img.shields.io/badge/Frontend-React%2018-blue?logo=react)](https://reactjs.org/)
 [![Flask](https://img.shields.io/badge/Backend-Flask%203.0-lightgrey?logo=flask)](https://flask.palletsprojects.com/)
-[![PostgreSQL](https://img.shields.io/badge/Database-SQLite%20/%20PostgreSQL-336791?logo=sqlite)](https://www.sqlite.org/)
-[![Vercel](https://img.shields.io/badge/Frontend-Vercel-black?logo=vercel)](https://vercel.com/)
-[![Render](https://img.shields.io/badge/Backend-Render-46E3B7?logo=render)](https://render.com/)
+[![SQLite](https://img.shields.io/badge/Database-SQLite-336791?logo=sqlite)](https://www.sqlite.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Styling-Tailwind%20CSS-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
 [![Machine Learning](https://img.shields.io/badge/ML-XGBoost%20%2B%20RF-orange?logo=scikitlearn)](https://scikit-learn.org/)
 
-**EduSense** is a comprehensive, enterprise-grade educational analytics platform designed to enhance student success through real-time engagement monitoring and predictive academic risk assessment. By integrating Computer Vision, Machine Learning, and Explainable AI (XAI), EduSense provides actionable insights for students, faculty, and administrators.
+**EduSense** is a sophisticated, enterprise-grade educational analytics platform designed to enhance student success through real-time engagement monitoring and predictive academic risk assessment. By integrating Computer Vision, Machine Learning, and Explainable AI (XAI), EduSense provides actionable insights for students, faculty, and administrators.
 
 ---
 
-## Key Features
+## 🚀 Project Overview
 
-### 1. Biometric Attendance System
-*   **Smart Enrollment**: Capture multi-angle facial photos to generate 128-D biometric signatures using `dlib` and `face_recognition`.
-*   **Live Recognition**: Real-time monitoring via Raspberry Pi/Webcam. Students are marked PRESENT automatically based on cosine similarity thresholds (> 0.6).
-*   **Hardware Integration**: Supports MQTT-based event streams for live "Face Detected" notifications.
+EduSense revolutionizes classroom management by combining real-time biometric facial recognition with advanced machine learning for predictive risk assessment. Using 128-D biometric signatures for automated attendance and transparent SHAP insights for early academic warning, the platform provides role-based smart dashboards and multi-channel auto alerts (SMS, WhatsApp, and Email) to ensure a seamless, data-driven ecosystem for student success and proactive intervention.
 
-### 2. ML Risk Prediction Engine
-*   **Advanced Feature Engineering**: Processes 20+ behavioral indicators including attendance trends, CA score slopes, and lab submission consistency.
-*   **Ensemble Modeling**: Utilizes an ensemble of **XGBoost** and **Random Forest** classifiers, trained with **SMOTE** to handle class imbalances.
-*   **Explainable AI (SHAP)**: Provides transparency into AI decisions by identifying the top-3 impact factors (e.g., "Decreasing Attendance", "Low Internal Marks") for every student at risk.
-
-### 3. Professional Multi-Role Dashboards
-*   **HOD Control Center**: Department-wide intelligence, faculty performance audits, and risk distribution matrices. Features specialized views for **Analytics**, **Faculties**, **Students**, and **Management**.
-*   **Faculty Dashboard**: Class-level heatmaps, automated parent alerting system, and SHAP-based student drill-downs.
-*   **Student Portal**: Personalized success tracking, "You vs Class" benchmarking, and AI-generated improvement tips.
-
-### 4. Multi-Channel Alerting
-*   **SMS/WhatsApp**: Automated parent notifications for high-risk flags via **Twilio**.
-*   **Email Reports**: Weekly performance dossiers sent to faculty via **SMTP**.
+### Core Technologies
+*   **Biometric Attendance**: Real-time facial recognition using 128-D biometric signatures for high-accuracy identification.
+*   **Risk Prediction**: ML models (XGBoost + Random Forest) identifying at-risk students with deep SHAP insights for proactive intervention.
+*   **Smart Dashboards**: Role-based control centers providing real-time intelligence for HODs, Faculty, and Students.
+*   **Auto Alerts**: Multi-channel notifications via SMS, WhatsApp, and Email to ensure a fast response loop.
 
 ---
 
-## System Architecture
+## 🛠️ System Architecture
 
 ```text
 EduSense/
 ├── backend/              # Flask REST API with JWT Authentication
+│   ├── app/              # Application logic & routes
+│   └── run.py            # Server entry point
 ├── frontend/             # React (Vite) + Tailwind CSS + Framer Motion
+│   ├── src/components/   # Modular UI components
+│   └── src/services/     # API integration
+├── ml_engine/            # Model training & XAI (SHAP) logic
 ├── data_pipeline/        # CSV/JSON Ingestion & Feature Engineering
 ├── hardware/             # Face recognition (OpenCV/dlib) & IoT logic
-├── ml_engine/            # Model training & XAI (SHAP) logic
 ├── data/                 # Raw departmental JSON and CSV marks sheets
-├── requirements.txt      # Python dependencies
-├── db_config.py          # PostgreSQL connection utilities
+└── db_config.py          # Database connection utilities
 ```
 
 ---
 
-## Deployment Guide
+## 👨‍💻 Development Team
 
-### 1. Render (Backend)
-To deploy the backend on Render successfully:
-1.  **New Web Service**: Connect your GitHub repository.
-2.  **Environment**: `Python 3`.
-3.  **Root Directory**: `(Leave Empty / Project Root)`.
-4.  **Build Command**: `pip install -r requirements.txt && python auto_init.py`.
-5.  **Start Command**: `gunicorn --timeout 120 --bind 0.0.0.0:$PORT backend.run:app`.
-6.  **Environment Variables**:
-    *   `PYTHONPATH`: `.`
-    *   `JWT_SECRET_KEY`: `any-secret-string`
+| Name | Role | Profile |
+| :--- | :--- | :--- |
+| **Syed Asif Syed Gaffar** | Lead Developer | [LinkedIn](https://www.linkedin.com/in/the-syed-as_if) |
+| **Arpita Mukund Jondhale** | Researcher & Developer | [LinkedIn](https://www.linkedin.com/in/arpita-jondhale-87816629a) |
+| **Gayatri Shriram Bharose** | Data Analyst | [LinkedIn](https://www.linkedin.com/in/gayatri-bharose-68a059292) |
 
-### 2. Vercel (Frontend)
-The frontend is already configured with `vercel.json` in the root:
-1.  **Framework Preset**: `Vite`.
-2.  **Root Directory**: `(Leave Empty / Project Root)`.
-3.  **Build Command**: `cd frontend && npm install && npm run build`.
-4.  **Output Directory**: `frontend/dist`.
+### Under the Guidance of
+**Prof. Pawar V.K.**  
+*Head of Department, Computer Science & Engineering*  
+MSPM’S Shri Shivaji Institute of Engineering and Management Studies, Parbhani.
 
 ---
 
-## Login Credentials
+## ⚙️ Installation & Setup
+
+### 1. Backend Setup
+1.  **Install Dependencies**:
+    ```bash
+    pip install -r requirements.txt
+    ```
+2.  **Initialize & Train**:
+    ```bash
+    python auto_init.py
+    ```
+3.  **Run Server**:
+    ```bash
+    python backend/run.py
+    ```
+
+### 2. Frontend Setup
+1.  **Navigate to directory**: `cd frontend`
+2.  **Install Packages**: `npm install`
+3.  **Start Dev Server**: `npm run dev`
+
+---
+
+## 🔐 Login Credentials (Demo)
 
 | Role | Username | Password |
 | :--- | :--- | :--- |
-| **Student** | `Roll Number` (e.g., CS225201) | `Full PRN` (e.g., 24022521242003) |
-| **S.E Class Teacher** | `DRS` (Prof. Devkar R.S.) | `edu123` |
-| **T.E Class Teacher** | `BPG` (Prof. Bais P.G.) | `edu123` |
-| **B.E Class Teacher** | `JPK` (Prof. Jadhav P.K.) | `edu123` |
-| **HOD** | `PVK` (Prof. Pawar V.K.) | `edu123` |
+| **Student** | `CS225201` | `24022521242003` |
+| **Faculty (S.E)** | `DRS` | `edu123` |
+| **HOD** | `PVK` | `edu123` |
 
 ---
 
-## Developed For
 **SSIEMS Computer Science & Engineering Department**  
 *Predicting success, preventing failure.*
