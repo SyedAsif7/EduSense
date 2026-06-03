@@ -3,7 +3,7 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from
 import {
   GraduationCap, Eye, EyeOff, User, Lock, ArrowLeft,
   AlertCircle, CheckCircle2, Loader2, Fingerprint,
-  Facebook, Linkedin, Sparkles, ShieldCheck
+  Sparkles, ShieldCheck
 } from 'lucide-react';
 
 /* ─── Floating Input Component ─── */
@@ -505,48 +505,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ handleLogin, onBack }) => {
                   </button>
                 </motion.div>
               </form>
-
-              {/* Divider */}
-              <motion.div
-                className="flex items-center my-7"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.9 }}
-              >
-                <div className="flex-1 h-[1px]" style={{ background: 'rgba(255,255,255,0.06)' }} />
-                <span className="px-4 text-white/25 text-[10px] font-semibold uppercase tracking-[2px]">or continue with</span>
-                <div className="flex-1 h-[1px]" style={{ background: 'rgba(255,255,255,0.06)' }} />
-              </motion.div>
-
-              {/* Social Login */}
-              <motion.div
-                className="flex justify-center space-x-4"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.0 }}
-              >
-                {[
-                  { icon: <Facebook size={18} />, label: 'Facebook' },
-                  { icon: <span className="font-bold text-[15px]">G</span>, label: 'Google' },
-                  { icon: <Linkedin size={18} />, label: 'LinkedIn' },
-                ].map((s, i) => (
-                  <motion.button
-                    key={i}
-                    whileHover={{ y: -3, background: 'rgba(255,255,255,0.08)' }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center justify-center rounded-xl cursor-pointer transition-all duration-200 border border-white/[0.06] hover:border-indigo-500/30"
-                    style={{
-                      width: 56,
-                      height: 48,
-                      background: 'rgba(255,255,255,0.03)',
-                      color: 'rgba(255,255,255,0.5)',
-                    }}
-                    title={s.label}
-                  >
-                    {s.icon}
-                  </motion.button>
-                ))}
-              </motion.div>
 
               {/* Sign Up Link */}
               <motion.div

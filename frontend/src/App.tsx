@@ -7,6 +7,7 @@ import FacultyDashboard from './components/FacultyDashboard';
 import HODDashboard from './components/HODDashboard';
 import StudentDashboard from './components/StudentDashboard';
 import ProfilePage from './components/ProfilePage';
+import AboutUs from './components/AboutUs';
 import { Bell, Search, Settings, HelpCircle, Menu, X } from 'lucide-react';
 
 const App = () => {
@@ -130,6 +131,7 @@ const App = () => {
             </div>
           )}
           {activeTab === 'profile' && <ProfilePage />}
+          {activeTab === 'about' && <AboutUs />}
           {activeTab === 'risk' && role === 'FACULTY' && <FacultyDashboard view="risk" externalSearch={searchTerm} onSearchChange={setSearchTerm} />}
           {activeTab === 'trends' && role === 'HOD' && <HODDashboard view="trends" externalSearch={searchTerm} onSearchChange={setSearchTerm} />}
         </main>

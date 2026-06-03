@@ -23,7 +23,12 @@ import {
   ArrowUpRight,
   Play,
   Menu,
-  X
+  X,
+  Linkedin,
+  BookOpen,
+  Award,
+  Info,
+  Layout
 } from 'lucide-react';
 
 interface LandingPageProps {
@@ -42,6 +47,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick }) => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const teamMembers = [
+     {
+       name: "Syed Asif Syed Gaffar",
+       role: "Lead Developer",
+       linkedin: "https://www.linkedin.com/in/the-syed-asif"
+     },
+     {
+       name: "Arpita Mukund Jondhale",
+       role: "Researcher & Developer",
+       linkedin: "https://www.linkedin.com/in/arpita-jondhale-87816629a"
+     },
+     {
+       name: "Gayatri Shriram Bharose",
+       role: "Data Analyst",
+       linkedin: "https://www.linkedin.com/in/gayatri-bharose-68a059292"
+     }
+   ];
 
   return (
     <div className="min-h-screen font-sans text-white overflow-x-hidden relative bg-slate-950">
@@ -445,45 +468,117 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLoginClick }) => {
           </div>
         </section>
 
-        {/* CTA Section */}
+        {/* About Section */}
         <section id="about" className="py-32 px-6">
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="max-w-5xl mx-auto"
-          >
-            <div className="relative bg-gradient-to-br from-indigo-600/20 to-purple-600/20 backdrop-blur-xl rounded-[2rem] p-12 md:p-20 border border-white/10 text-center overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5" />
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl" />
-              
-              <div className="relative z-10">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl mb-8 shadow-lg shadow-indigo-500/20">
-                  <GraduationCap className="text-white w-8 h-8" />
+          <div className="max-w-7xl mx-auto">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-20"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold uppercase tracking-widest mb-6">
+                <Sparkles size={14} />
+                Project Intelligence
+              </div>
+              <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">
+                About <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">EduSense</span>
+              </h2>
+              <p className="text-white/50 max-w-2xl mx-auto text-lg font-light leading-relaxed">
+                A sophisticated blend of biometric security and machine learning designed to elevate academic standards.
+              </p>
+            </motion.div>
+
+            <div className="space-y-12">
+              {/* Project Details Paragraphs */}
+              <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="bg-white/[0.03] backdrop-blur-xl rounded-[3rem] border border-white/10 p-10 md:p-16"
+              >
+                <div className="text-white/70 text-lg leading-relaxed font-light">
+                  <p>
+                    EduSense revolutionizes classroom management by combining real-time biometric facial recognition with advanced machine learning for predictive risk assessment. Using 128-D biometric signatures for automated attendance and transparent SHAP insights for early academic warning, the platform provides role-based smart dashboards and multi-channel auto alerts (SMS, WhatsApp, and Email) to ensure a seamless, data-driven ecosystem for student success and proactive intervention.
+                  </p>
                 </div>
-                <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
-                  Ready to transform your institution?
-                </h2>
-                <p className="text-white/65 text-lg mb-10 max-w-xl mx-auto">
-                  Join the future of academic intelligence. Start making data-driven decisions today.
-                </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <motion.button 
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={onLoginClick}
-                    className="bg-white text-slate-900 px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/90 transition-all flex items-center gap-2"
-                  >
-                    Access Portal
-                    <ArrowRight size={18} />
-                  </motion.button>
-                  <a href="#features" className="text-white/80 hover:text-white font-medium transition-colors flex items-center gap-2">
-                    Learn more <ArrowUpRight size={16} />
-                  </a>
-                </div>
+              </motion.div>
+
+              {/* Team & Guidance Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Team */}
+                <motion.div 
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  className="bg-white/[0.03] backdrop-blur-md rounded-[2.5rem] border border-white/10 p-10"
+                >
+                  <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-4">
+                    <Users size={24} className="text-purple-400" />
+                    Our Team
+                  </h3>
+                  <div className="space-y-4">
+                    {teamMembers.map((member, idx) => (
+                      <div key={idx} className="group flex items-center justify-between p-5 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-indigo-500/30 hover:bg-white/[0.05] transition-all">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center text-white font-bold text-sm">
+                            {member.name[0]}
+                          </div>
+                          <div>
+                            <h4 className="text-white font-bold text-sm">{member.name}</h4>
+                            <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold">{member.role}</p>
+                          </div>
+                        </div>
+                        <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-white/5 text-white/30 hover:text-indigo-400 hover:bg-indigo-400/10 transition-all">
+                          <Linkedin size={18} />
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Guidance */}
+                <motion.div 
+                  initial={{ opacity: 0, x: 30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  className="bg-white/[0.03] backdrop-blur-md rounded-[2.5rem] border border-white/10 p-10 flex flex-col justify-center text-center"
+                >
+                  <div className="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-400 mx-auto mb-6">
+                    <GraduationCap size={32} />
+                  </div>
+                  <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mb-2">Project Guide & H.O.D</p>
+                  <h3 className="text-2xl font-black text-white mb-2">Prof. Pawar V.K.</h3>
+                  <p className="text-white/50 text-sm">Department of Computer Science & Engineering</p>
+                  <div className="mt-8 pt-8 border-t border-white/5 text-white/20 text-[10px] font-bold uppercase tracking-widest">
+                    SSIEMS Parbhani
+                  </div>
+                </motion.div>
               </div>
             </div>
-          </motion.div>
+
+            {/* Final CTA */}
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mt-20 text-center"
+            >
+              <div className="relative bg-gradient-to-br from-indigo-600/20 to-purple-600/20 backdrop-blur-xl rounded-[3rem] p-12 border border-white/10 overflow-hidden group">
+                <div className="absolute inset-0 bg-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="relative z-10">
+                  <h3 className="text-3xl font-bold text-white mb-4 tracking-tight">Ready to Experience the Future?</h3>
+                  <p className="text-white/50 mb-10 max-w-lg mx-auto font-light">Join us in transforming educational standards with AI-driven intelligence.</p>
+                  <button 
+                    onClick={onLoginClick}
+                    className="bg-white text-slate-900 px-12 py-4 rounded-full font-black text-lg hover:bg-indigo-50 transition-all shadow-2xl shadow-white/5 active:scale-95"
+                  >
+                    Launch Portal
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </section>
 
         {/* Footer */}
